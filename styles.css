@@ -1300,16 +1300,6 @@ a, button, .tab, .highlight, [role="button"] {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
 }
 
-.project-card .card-tag {
-    display: inline-block;
-    font-size: 0.6875rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--color-text-muted);
-    margin-bottom: 12px;
-}
-
 .project-card h3 {
     font-size: 1rem;
     font-weight: 600;

@@ -745,7 +745,6 @@ function initProjectsSection() {
 
             return `
                 <article class="project-card" data-project-index="${index}">
-                    <span class="card-tag">Project</span>
                     <h3><span class="highlight ${proj.highlight}">${proj.name}</span></h3>
                     <p class="project-brief">${proj.briefDescription}</p>
                     ${linksHtml}
