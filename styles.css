@@ -1369,7 +1369,7 @@ a, button, .tab, .highlight, [role="button"] {
     background: var(--color-bg);
     border: 1px solid var(--color-border);
     border-radius: 12px;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 /* Cards with a drag handle shift content right to make room */
@@ -1379,7 +1379,8 @@ a, button, .tab, .highlight, [role="button"] {
 
 .project-card:hover {
     border-color: var(--color-text-light);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.11);
+    transform: translateY(-2px);
 }
 
 /* Drag handle — 6-dot grip, fades in on card hover */
@@ -1432,7 +1433,7 @@ a, button, .tab, .highlight, [role="button"] {
 }
 
 .project-brief {
-    font-size: 1rem;
+    font-size: 1.0625rem;
     line-height: 1.7;
     margin-bottom: 16px;
 }
