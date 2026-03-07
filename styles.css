@@ -1213,6 +1213,80 @@ a, button, .tab, .highlight, [role="button"] {
     gap: 24px;
 }
 
+/* ===================================
+   Projects Carousel - Multi-page horizontal scroll
+   =================================== */
+
+.projects-carousel-wrapper {
+    position: relative;
+}
+
+/* Right gradient fade — signals more content exists */
+.projects-carousel-wrapper::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 64px;
+    background: linear-gradient(to right, transparent, var(--color-bg));
+    pointer-events: none;
+    z-index: 1;
+    transition: opacity 0.3s ease;
+}
+
+.projects-carousel-wrapper.at-end::after {
+    opacity: 0;
+}
+
+.projects-carousel {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.projects-carousel::-webkit-scrollbar {
+    display: none;
+}
+
+/* Each slide holds up to 5 cards; remaining width peeks next slide */
+.projects-page {
+    min-width: calc(100% - 40px);
+    flex-shrink: 0;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Dot indicators below the carousel */
+.projects-scroll-dots {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 20px;
+}
+
+.projects-scroll-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-border);
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.projects-scroll-dot.active {
+    background: var(--color-text-light);
+    transform: scale(1.4);
+}
+
 .project-card {
     padding: 32px;
     background: var(--color-bg);
@@ -1237,13 +1311,13 @@ a, button, .tab, .highlight, [role="button"] {
 }
 
 .project-card h3 {
-    font-size: 1.125rem;
+    font-size: 1rem;
     font-weight: 600;
     margin-bottom: 4px;
 }
 
 .project-brief {
-    font-size: 1.0625rem;
+    font-size: 1rem;
     line-height: 1.7;
     margin-bottom: 16px;
 }
