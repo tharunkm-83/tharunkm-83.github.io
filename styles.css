@@ -1262,11 +1262,18 @@ a, button, .tab, .highlight, [role="button"] {
     gap: 24px;
 }
 
-/* Nav row: [back]  dots  [Next →] */
+/* Nav row: [back]  dots  [Next →] — appears at top and bottom of carousel */
 .projects-carousel-nav {
     display: flex;
     align-items: center;
     gap: 16px;
+    margin-top: 0;
+    margin-bottom: 20px; /* spacing before carousel */
+}
+
+/* Bottom nav gets top spacing instead */
+.projects-carousel-wrapper + .projects-carousel-nav {
+    margin-bottom: 0;
     margin-top: 20px;
 }
 

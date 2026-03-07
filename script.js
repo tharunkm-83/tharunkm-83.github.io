@@ -765,39 +765,39 @@ function initProjectsSection() {
             projectsList.innerHTML = state.projects.map((proj, index) => buildCardHtml(proj, index)).join('');
         } else {
             // Multi-page: horizontal carousel with peek
+            const backSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="15 18 9 12 15 6"/></svg>`;
+            const nextSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><polyline points="9 18 15 12 9 6"/></svg>`;
+
             const pagesHtml = pages.map((pageProjects, pageIndex) => {
                 const startIndex = pageIndex * PROJECTS_PER_PAGE;
                 const cardsHtml = pageProjects.map((proj, i) => buildCardHtml(proj, startIndex + i)).join('');
                 return `<div class="projects-page">${cardsHtml}</div>`;
             }).join('');
 
-            const dotsHtml = pages.map((_, i) =>
-                `<button class="projects-scroll-dot${i === 0 ? ' active' : ''}" data-page="${i}" aria-label="Page ${i + 1}"></button>`
-            ).join('');
+            // Reusable nav row — back starts hidden (always on page 1 at load)
+            function makeNavHtml() {
+                const dotsHtml = pages.map((_, i) =>
+                    `<button class="projects-scroll-dot${i === 0 ? ' active' : ''}" data-page="${i}" aria-label="Page ${i + 1}"></button>`
+                ).join('');
+                return `
+                    <button class="projects-nav-back hidden" aria-label="Previous page">${backSvg}</button>
+                    <div class="projects-scroll-dots">${dotsHtml}</div>
+                    <button class="projects-nav-next" aria-label="Next page">Next ${nextSvg}</button>
+                `;
+            }
 
             projectsList.innerHTML = `
+                <div class="projects-carousel-nav">${makeNavHtml()}</div>
                 <div class="projects-carousel-wrapper" id="projects-carousel-wrapper">
                     <div class="projects-carousel" id="projects-carousel-scroll">
                         ${pagesHtml}
                     </div>
                 </div>
-                <div class="projects-carousel-nav">
-                    <button class="projects-nav-back" id="projects-nav-arrow-left" aria-label="Previous page">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="15 18 9 12 15 6"/></svg>
-                    </button>
-                    <div class="projects-scroll-dots">${dotsHtml}</div>
-                    <button class="projects-nav-next" id="projects-nav-arrow" aria-label="Next page">
-                        Next
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><polyline points="9 18 15 12 9 6"/></svg>
-                    </button>
-                </div>
+                <div class="projects-carousel-nav">${makeNavHtml()}</div>
             `;
 
             const carousel = document.getElementById('projects-carousel-scroll');
             const wrapper = document.getElementById('projects-carousel-wrapper');
-            const navArrow = document.getElementById('projects-nav-arrow');
-            const navArrowLeft = document.getElementById('projects-nav-arrow-left');
-            const dots = projectsList.querySelectorAll('.projects-scroll-dot');
             const pageEls = () => carousel.querySelectorAll('.projects-page');
 
             // Set page widths in px so % doesn't mis-resolve inside an overflow-scroll container
@@ -820,31 +820,41 @@ function initProjectsSection() {
                 return activePage;
             }
 
-            carousel.addEventListener('scroll', () => {
+            // Sync both top and bottom navs from a single function
+            function updateNav() {
                 const activePage = getActivePage();
-                dots.forEach((dot, i) => dot.classList.toggle('active', i === activePage));
                 const atEnd = carousel.scrollLeft + carousel.offsetWidth >= carousel.scrollWidth - 10;
+                projectsList.querySelectorAll('.projects-scroll-dot').forEach(dot => {
+                    dot.classList.toggle('active', parseInt(dot.dataset.page) === activePage);
+                });
+                projectsList.querySelectorAll('.projects-nav-next').forEach(btn => {
+                    btn.classList.toggle('hidden', atEnd);
+                });
+                projectsList.querySelectorAll('.projects-nav-back').forEach(btn => {
+                    btn.classList.toggle('hidden', activePage === 0);
+                });
                 wrapper.classList.toggle('at-end', atEnd);
-                // Show/hide controls based on position
-                navArrow.classList.toggle('hidden', atEnd);
-                navArrowLeft.classList.toggle('hidden', activePage === 0);
-            }, { passive: true });
+            }
 
-            // Arrow clicks
-            navArrow.addEventListener('click', () => {
-                const next = pageEls()[getActivePage() + 1];
-                if (next) carousel.scrollTo({ left: next.offsetLeft, behavior: 'smooth' });
+            carousel.addEventListener('scroll', updateNav, { passive: true });
+
+            projectsList.querySelectorAll('.projects-nav-next').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const next = pageEls()[getActivePage() + 1];
+                    if (next) carousel.scrollTo({ left: next.offsetLeft, behavior: 'smooth' });
+                });
             });
 
-            navArrowLeft.addEventListener('click', () => {
-                const prev = pageEls()[getActivePage() - 1];
-                if (prev) carousel.scrollTo({ left: prev.offsetLeft, behavior: 'smooth' });
+            projectsList.querySelectorAll('.projects-nav-back').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const prev = pageEls()[getActivePage() - 1];
+                    if (prev) carousel.scrollTo({ left: prev.offsetLeft, behavior: 'smooth' });
+                });
             });
 
-            dots.forEach(dot => {
+            projectsList.querySelectorAll('.projects-scroll-dot').forEach(dot => {
                 dot.addEventListener('click', () => {
-                    const page = parseInt(dot.dataset.page);
-                    const target = pageEls()[page];
+                    const target = pageEls()[parseInt(dot.dataset.page)];
                     if (target) carousel.scrollTo({ left: target.offsetLeft, behavior: 'smooth' });
                 });
             });
