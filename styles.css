@@ -1365,7 +1365,13 @@ a, button, .tab, .highlight, [role="button"] {
     pointer-events: none;
 }
 
+/* ===================================
+   Admin: Drag-to-Reorder
+   =================================== */
+
+/* Card needs relative positioning so drag handle can be placed absolutely */
 .project-card {
+    position: relative;
     padding: 32px;
     background: var(--color-bg);
     border: 1px solid var(--color-border);
@@ -1373,9 +1379,57 @@ a, button, .tab, .highlight, [role="button"] {
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
+/* Cards with a drag handle shift content right to make room */
+.project-card[data-project-id] {
+    padding-left: 44px;
+}
+
 .project-card:hover {
     border-color: var(--color-text-light);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+
+/* Drag handle — 6-dot grip, fades in on card hover */
+.drag-handle {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-border);
+    cursor: grab;
+    padding: 4px 2px;
+    opacity: 0;
+    transition: opacity 0.15s ease, color 0.15s ease;
+    line-height: 0;
+    user-select: none;
+}
+
+.project-card:hover .drag-handle {
+    opacity: 1;
+}
+
+.drag-handle:hover {
+    color: var(--color-text-light);
+}
+
+.drag-handle:active {
+    cursor: grabbing;
+}
+
+/* SortableJS — ghost (placeholder slot left during drag) */
+.sortable-ghost {
+    opacity: 0;
+    border: 1.5px dashed var(--color-text-light) !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+/* SortableJS — chosen (the card being actively dragged) */
+.sortable-chosen {
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.13) !important;
+    transform: scale(1.015);
+    border-color: var(--color-text-light) !important;
+    z-index: 10;
 }
 
 .project-card h3 {

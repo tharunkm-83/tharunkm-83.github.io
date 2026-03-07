@@ -718,6 +718,9 @@ function initProjectsSection() {
         const githubSvg = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>';
         const externalSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
 
+        // Drag handle SVG (6-dot grip) — shown only in admin mode
+        const dragHandleSvg = '<svg viewBox="0 0 10 16" fill="currentColor" width="10" height="16"><circle cx="3" cy="3" r="1.2"/><circle cx="7" cy="3" r="1.2"/><circle cx="3" cy="8" r="1.2"/><circle cx="7" cy="8" r="1.2"/><circle cx="3" cy="13" r="1.2"/><circle cx="7" cy="13" r="1.2"/></svg>';
+
         // Build HTML for a single project card
         function buildCardHtml(proj, index) {
             const linksHtml = (proj.githubUrl || proj.demoUrl) ? `
@@ -743,8 +746,10 @@ function initProjectsSection() {
                 </div>
             ` : '';
 
+            // data-project-id used by sortable reorder; data-project-index used by expand toggle
             return `
-                <article class="project-card" data-project-index="${index}">
+                <article class="project-card" data-project-index="${index}" data-project-id="${proj.id}">
+                    ${isAdminUser ? `<div class="drag-handle" title="Drag to reorder" aria-hidden="true">${dragHandleSvg}</div>` : ''}
                     <h3><span class="highlight ${proj.highlight}">${proj.name}</span></h3>
                     <p class="project-brief">${proj.briefDescription}</p>
                     ${linksHtml}
@@ -752,6 +757,14 @@ function initProjectsSection() {
                     ${adminHtml}
                 </article>
             `;
+        }
+
+        if (isAdminUser) {
+            // Admin: always flat list (no carousel) so drag-to-reorder works across all projects
+            projectsList.innerHTML = state.projects.map((proj, index) => buildCardHtml(proj, index)).join('');
+            initProjectToggles();
+            initAdminSortable(state, projectsList);
+            return;
         }
 
         const PROJECTS_PER_PAGE = 5;
@@ -874,6 +887,66 @@ function initProjectsSection() {
     }
 
     init();
+}
+
+/**
+ * Admin Drag-to-Reorder — initializes SortableJS on the projects list.
+ * Only runs in admin mode when SortableJS is loaded.
+ * @param {object} state - window._projectsState
+ * @param {HTMLElement} container - the #projects-list element
+ */
+function initAdminSortable(state, container) {
+    if (typeof Sortable === 'undefined') {
+        console.warn('SortableJS not loaded — drag-to-reorder unavailable');
+        return;
+    }
+
+    new Sortable(container, {
+        animation: 150,          // smooth card slide animation (ms)
+        handle: '.drag-handle',  // only the grip icon initiates drag
+        ghostClass: 'sortable-ghost',    // placeholder left behind during drag
+        chosenClass: 'sortable-chosen',  // card being actively dragged
+        scroll: true,            // auto-scroll page when near edges
+        scrollSensitivity: 80,
+        scrollSpeed: 10,
+        onEnd: async function() {
+            // Read new order from DOM after drop
+            const newOrder = Array.from(container.querySelectorAll('.project-card')).map((card, i) => ({
+                id: parseInt(card.dataset.projectId),
+                sort_order: i
+            }));
+
+            // Optimistic update: reorder local state to match DOM
+            const prevProjects = [...state.projects];
+            state.projects = newOrder
+                .map(({ id }) => state.projects.find(p => p.id === id))
+                .filter(Boolean);
+
+            try {
+                await saveProjectOrder(newOrder);
+            } catch (err) {
+                // Rollback: restore previous order and re-render
+                state.projects = prevProjects;
+                if (window._projectsRender) window._projectsRender();
+                console.error('Reorder failed — previous order restored:', err);
+            }
+        }
+    });
+}
+
+/**
+ * Persist new project sort order to Supabase.
+ * Uses upsert so only sort_order changes; all other fields are untouched.
+ */
+async function saveProjectOrder(newOrder) {
+    if (!supabaseClient) throw new Error('Supabase not connected');
+    const { error } = await supabaseClient
+        .from('projects')
+        .upsert(
+            newOrder.map(({ id, sort_order }) => ({ id, sort_order })),
+            { onConflict: 'id' }
+        );
+    if (error) throw error;
 }
 
 // ---- Global project CRUD functions (called via onclick) ----
@@ -1002,7 +1075,7 @@ window.projectSaveItem = async function() {
                     expanded_content: expandedContent || null,
                     github_url: githubUrl || null,
                     demo_url: demoUrl || null,
-                    sort_order: 0
+                    sort_order: state.projects.length  // append at end of current list
                 }])
                 .select();
 
