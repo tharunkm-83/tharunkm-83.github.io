@@ -811,18 +811,7 @@ function initProjectsSection() {
             const carousel = document.getElementById('projects-carousel-scroll');
             const wrapper = document.getElementById('projects-carousel-wrapper');
             const pageEls = () => carousel.querySelectorAll('.projects-page');
-
-            // Set page widths in px so % doesn't mis-resolve inside an overflow-scroll container
             const PEEK_PX = 48;
-            function updatePageWidths() {
-                const pageWidth = wrapper.offsetWidth - PEEK_PX;
-                pageEls().forEach(page => {
-                    page.style.minWidth = pageWidth + 'px';
-                    page.style.maxWidth = pageWidth + 'px';
-                });
-            }
-            updatePageWidths();
-            new ResizeObserver(updatePageWidths).observe(wrapper);
 
             function getActivePage() {
                 let activePage = 0;
@@ -832,7 +821,6 @@ function initProjectsSection() {
                 return activePage;
             }
 
-            // Sync both top and bottom navs from a single function
             function updateNav() {
                 const activePage = getActivePage();
                 const atEnd = carousel.scrollLeft + carousel.offsetWidth >= carousel.scrollWidth - 10;
@@ -847,6 +835,21 @@ function initProjectsSection() {
                 });
                 wrapper.classList.toggle('at-end', atEnd);
             }
+
+            // Set page widths in px (% mis-resolves inside overflow-scroll flex containers).
+            // Also re-syncs nav: when tab is hidden on initial render, offsetWidth=0 so we
+            // skip the sync; ResizeObserver fires again once the tab becomes visible.
+            function updatePageWidths() {
+                const pageWidth = wrapper.offsetWidth - PEEK_PX;
+                if (pageWidth <= 0) return; // tab still hidden — ResizeObserver will retry
+                pageEls().forEach(page => {
+                    page.style.minWidth = pageWidth + 'px';
+                    page.style.maxWidth = pageWidth + 'px';
+                });
+                updateNav(); // sync button visibility after layout is known
+            }
+            updatePageWidths();
+            new ResizeObserver(updatePageWidths).observe(wrapper);
 
             carousel.addEventListener('scroll', updateNav, { passive: true });
 
