@@ -1222,15 +1222,15 @@ a, button, .tab, .highlight, [role="button"] {
     overflow: hidden; /* clips scroll overflow so % widths on children resolve correctly */
 }
 
-/* Right gradient fade — signals more content exists */
+/* Right gradient fade — directional overflow cue */
 .projects-carousel-wrapper::after {
     content: '';
     position: absolute;
     right: 0;
     top: 0;
     bottom: 0;
-    width: 64px;
-    background: linear-gradient(to right, transparent, var(--color-bg));
+    width: 96px;
+    background: linear-gradient(to right, transparent, var(--color-bg) 75%);
     pointer-events: none;
     z-index: 1;
     transition: opacity 0.3s ease;
@@ -1262,23 +1262,12 @@ a, button, .tab, .highlight, [role="button"] {
     gap: 24px;
 }
 
-/* "more follows" hint text above nav */
-.projects-page-hint {
-    text-align: center;
-    font-size: 0.8125rem;
-    color: var(--color-text-muted);
-    margin-top: 20px;
-    margin-bottom: 0;
-    letter-spacing: 0.01em;
-}
-
-/* Nav row: back arrow + dots + forward arrow, centered */
+/* Nav row: [back]  dots  [Next →] */
 .projects-carousel-nav {
     display: flex;
     align-items: center;
-    justify-content: center;
     gap: 16px;
-    margin-top: 12px;
+    margin-top: 20px;
 }
 
 /* Dot indicators */
@@ -1304,40 +1293,70 @@ a, button, .tab, .highlight, [role="button"] {
     transform: scale(1.4);
 }
 
-/* Navigation arrows — more prominent */
-.projects-nav-arrow {
+/* Back arrow — secondary, small circle */
+.projects-nav-back {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
-    border: 1.5px solid var(--color-text-light);
-    background: var(--color-bg);
-    color: var(--color-text);
+    border: 1.5px solid var(--color-border);
+    background: transparent;
+    color: var(--color-text-light);
     cursor: pointer;
-    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
     flex-shrink: 0;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    transition: border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
 
-.projects-nav-arrow:hover {
-    background: var(--color-text);
-    color: var(--color-bg);
-    border-color: var(--color-text);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.14);
-}
-
-.projects-nav-arrow--left:hover {
+.projects-nav-back:hover {
+    border-color: var(--color-text-light);
+    color: var(--color-text);
     transform: translateX(-2px);
 }
 
-.projects-nav-arrow:not(.projects-nav-arrow--left):hover {
-    transform: translateX(2px);
+/* Use visibility:hidden so back button holds layout space when inactive */
+.projects-nav-back.hidden {
+    visibility: hidden;
+    pointer-events: none;
 }
 
-.projects-nav-arrow.hidden {
-    display: none;
+/* Next pill — primary CTA, pushes to right of nav */
+@keyframes projects-next-bounce {
+    0%, 88%, 100% { transform: translateX(0); }
+    92%           { transform: translateX(5px); }
+    96%           { transform: translateX(2px); }
+}
+
+.projects-nav-next {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto; /* push to right */
+    padding: 9px 18px;
+    border-radius: 100px;
+    border: 1.5px solid var(--color-text);
+    background: transparent;
+    color: var(--color-text);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    animation: projects-next-bounce 7s ease-in-out infinite;
+}
+
+.projects-nav-next:hover {
+    background: var(--color-text);
+    color: var(--color-bg);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateX(4px);
+    animation: none; /* stop bounce while hovering */
+}
+
+.projects-nav-next.hidden {
+    visibility: hidden;
+    pointer-events: none;
 }
 
 .project-card {

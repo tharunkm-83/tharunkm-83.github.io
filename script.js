@@ -781,14 +781,14 @@ function initProjectsSection() {
                         ${pagesHtml}
                     </div>
                 </div>
-                <p class="projects-page-hint" id="projects-page-hint">more follows. turn the page!</p>
                 <div class="projects-carousel-nav">
-                    <button class="projects-nav-arrow projects-nav-arrow--left hidden" id="projects-nav-arrow-left" aria-label="Previous page">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="15 18 9 12 15 6"/></svg>
+                    <button class="projects-nav-back" id="projects-nav-arrow-left" aria-label="Previous page">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="15 18 9 12 15 6"/></svg>
                     </button>
                     <div class="projects-scroll-dots">${dotsHtml}</div>
-                    <button class="projects-nav-arrow" id="projects-nav-arrow" aria-label="Next page">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="9 18 15 12 9 6"/></svg>
+                    <button class="projects-nav-next" id="projects-nav-arrow" aria-label="Next page">
+                        Next
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><polyline points="9 18 15 12 9 6"/></svg>
                     </button>
                 </div>
             `;
@@ -797,7 +797,6 @@ function initProjectsSection() {
             const wrapper = document.getElementById('projects-carousel-wrapper');
             const navArrow = document.getElementById('projects-nav-arrow');
             const navArrowLeft = document.getElementById('projects-nav-arrow-left');
-            const pageHint = document.getElementById('projects-page-hint');
             const dots = projectsList.querySelectorAll('.projects-scroll-dot');
             const pageEls = () => carousel.querySelectorAll('.projects-page');
 
@@ -826,11 +825,9 @@ function initProjectsSection() {
                 dots.forEach((dot, i) => dot.classList.toggle('active', i === activePage));
                 const atEnd = carousel.scrollLeft + carousel.offsetWidth >= carousel.scrollWidth - 10;
                 wrapper.classList.toggle('at-end', atEnd);
-                // Show/hide arrows based on position
+                // Show/hide controls based on position
                 navArrow.classList.toggle('hidden', atEnd);
                 navArrowLeft.classList.toggle('hidden', activePage === 0);
-                // Hide hint once user has turned the page
-                pageHint.classList.toggle('hidden', activePage > 0);
             }, { passive: true });
 
             // Arrow clicks
