@@ -838,7 +838,6 @@ a, button, .tab, .highlight, [role="button"] {
 .highlight {
     text-decoration: none;
     color: var(--color-text);
-    font-family: 'Courier New', Courier, monospace;
     padding: 2px 6px;
     margin: 0 -4px;
     border-radius: 4px;
@@ -1019,7 +1018,7 @@ a, button, .tab, .highlight, [role="button"] {
 
 .content-card {
     padding: 24px;
-    background: #fafaf8;
+    background: var(--color-bg);
     border: none;
     border-left: 3px solid var(--color-border);
     border-radius: 4px;
@@ -1086,7 +1085,7 @@ a, button, .tab, .highlight, [role="button"] {
 
 .experience-item {
     padding: 32px;
-    background: #fafaf8;
+    background: var(--color-bg);
     border: none;
     border-left: 3px solid var(--color-border);
     border-radius: 4px;
@@ -1115,7 +1114,6 @@ a, button, .tab, .highlight, [role="button"] {
 
 .experience-date {
     font-size: 0.8125rem;
-    font-family: 'Courier New', Courier, monospace;
     color: var(--color-text-muted);
     white-space: nowrap;
 }
@@ -1382,7 +1380,7 @@ a, button, .tab, .highlight, [role="button"] {
 .project-card {
     position: relative;
     padding: 32px;
-    background: #fafaf8;
+    background: var(--color-bg);
     border: none;
     border-left: 3px solid var(--color-border);
     border-radius: 4px;
