@@ -1219,6 +1219,7 @@ a, button, .tab, .highlight, [role="button"] {
 
 .projects-carousel-wrapper {
     position: relative;
+    overflow: hidden; /* clips scroll overflow so % widths on children resolve correctly */
 }
 
 /* Right gradient fade — signals more content exists */
@@ -1252,9 +1253,8 @@ a, button, .tab, .highlight, [role="button"] {
     display: none;
 }
 
-/* Each slide holds up to 5 cards; remaining width peeks next slide */
+/* Each slide holds up to 5 cards; width is set in JS for pixel-accurate peek */
 .projects-page {
-    min-width: calc(100% - 40px);
     flex-shrink: 0;
     scroll-snap-align: start;
     display: flex;

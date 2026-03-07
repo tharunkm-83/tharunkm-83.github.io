@@ -790,6 +790,18 @@ function initProjectsSection() {
             const dots = projectsList.querySelectorAll('.projects-scroll-dot');
             const pageEls = () => carousel.querySelectorAll('.projects-page');
 
+            // Set page widths in px so % doesn't mis-resolve inside an overflow-scroll container
+            const PEEK_PX = 40;
+            function updatePageWidths() {
+                const pageWidth = wrapper.offsetWidth - PEEK_PX;
+                pageEls().forEach(page => {
+                    page.style.minWidth = pageWidth + 'px';
+                    page.style.maxWidth = pageWidth + 'px';
+                });
+            }
+            updatePageWidths();
+            new ResizeObserver(updatePageWidths).observe(wrapper);
+
             carousel.addEventListener('scroll', () => {
                 let activePage = 0;
                 pageEls().forEach((el, i) => {
