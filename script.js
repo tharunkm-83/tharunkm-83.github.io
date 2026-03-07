@@ -800,7 +800,6 @@ function initProjectsSection() {
             }
 
             projectsList.innerHTML = `
-                <div class="projects-carousel-nav">${makeNavHtml()}</div>
                 <div class="projects-carousel-wrapper" id="projects-carousel-wrapper">
                     <div class="projects-carousel" id="projects-carousel-scroll">
                         ${pagesHtml}
