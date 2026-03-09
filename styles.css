@@ -1418,7 +1418,7 @@ a, button, .tab, .highlight, [role="button"] {
 }
 
 .project-card h3 {
-    font-size: 1rem;
+    font-size: 1.125rem;
     font-weight: 600;
     margin-bottom: 4px;
 }
@@ -1626,7 +1626,7 @@ a, button, .tab, .highlight, [role="button"] {
     }
 
     .project-card h3 {
-        font-size: 1rem;
+        font-size: 0.9375rem;
     }
 
     .project-brief {

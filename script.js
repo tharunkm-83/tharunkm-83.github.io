@@ -856,32 +856,48 @@ function initProjectsSection() {
 
             carousel.addEventListener('scroll', updateNav, { passive: true });
 
-            // Scroll to a page and guarantee nav sync after animation completes.
-            // The scroll event fires during animation but not always at the final
-            // snap position, so we add a setTimeout fallback to catch the settled state.
-            function scrollToPage(pageEl) {
+            // Scroll to a page and immediately update nav to the target state.
+            // Optimistic update avoids relying on scroll event timing — the nav
+            // reflects the destination before the animation completes.
+            function scrollToPage(pageEl, targetIndex) {
                 carousel.scrollTo({ left: pageEl.offsetLeft, behavior: 'smooth' });
-                setTimeout(updateNav, 400);
+                // Immediately reflect target state so Prev/Next show without delay
+                const targetIsLast = targetIndex >= pages.length - 1;
+                projectsList.querySelectorAll('.projects-scroll-dot').forEach(dot => {
+                    dot.classList.toggle('active', parseInt(dot.dataset.page) === targetIndex);
+                });
+                projectsList.querySelectorAll('.projects-nav-next').forEach(btn => {
+                    btn.classList.toggle('hidden', targetIsLast);
+                });
+                projectsList.querySelectorAll('.projects-nav-prev').forEach(btn => {
+                    btn.classList.toggle('hidden', targetIndex === 0);
+                });
+                wrapper.classList.toggle('at-end', targetIsLast);
+                // Confirm with DOM-based check after animation settles
+                setTimeout(updateNav, 600);
             }
 
             projectsList.querySelectorAll('.projects-nav-next').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    const next = pageEls()[getActivePage() + 1];
-                    if (next) scrollToPage(next);
+                    const targetIndex = getActivePage() + 1;
+                    const next = pageEls()[targetIndex];
+                    if (next) scrollToPage(next, targetIndex);
                 });
             });
 
             projectsList.querySelectorAll('.projects-nav-prev').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    const prev = pageEls()[getActivePage() - 1];
-                    if (prev) scrollToPage(prev);
+                    const targetIndex = getActivePage() - 1;
+                    const prev = pageEls()[targetIndex];
+                    if (prev) scrollToPage(prev, targetIndex);
                 });
             });
 
             projectsList.querySelectorAll('.projects-scroll-dot').forEach(dot => {
                 dot.addEventListener('click', () => {
-                    const target = pageEls()[parseInt(dot.dataset.page)];
-                    if (target) scrollToPage(target);
+                    const targetIndex = parseInt(dot.dataset.page);
+                    const target = pageEls()[targetIndex];
+                    if (target) scrollToPage(target, targetIndex);
                 });
             });
         }
