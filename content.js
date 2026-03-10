@@ -29,7 +29,9 @@ const CONTENT = {
     // Hello section intro (landing page)
     helloIntro: `Hi, I'm Shraddha. I’ve worked in analytics and now work in product management. This is my corner of the internet where I share my work, unfinished projects, imperfect experiments and whatever I'm curious about right now. A couple of my friends also think I'm funny. 
     <br><br>
-    Want to get in touch? Or just say Hi? <a href="https://www.linkedin.com/in/shraddha-kulkarni-6abb5a188/" target="_blank">LinkedIn</a>, <a href="mailto:meetshraddhakulkarni@gmail.com">Email</a>, <a href="https://x.com/shraddhaha" target="_blank">Twitter</a>`,
+    Want to get in touch? Or just say Hi? <a href="https://www.linkedin.com/in/shraddha-kulkarni-6abb5a188/" target="_blank">LinkedIn</a>, <a href="mailto:meetshraddhakulkarni@gmail.com">Email</a>, <a href="https://x.com/shraddhaha" target="_blank">Twitter</a>
+    <br><br>
+    "<a href="https://x.com/shraddhaha/status/2030900691032768810" target="_blank" rel="noopener noreferrer" style="text-decoration: underline;">Yes, I was in the newspaper once</a>. I haven't let the fame change me."`,
 
     // About section content (structured)
     aboutContent: {
