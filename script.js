@@ -3321,6 +3321,17 @@ Type your message below and click
         });
     }
 
+    // Rate limiting: one submission per 60 seconds per browser session
+    const RATE_LIMIT_MS = 60 * 1000;
+    function isRateLimited() {
+        const lastSubmit = parseInt(localStorage.getItem('guestbook_last_submit') || '0', 10);
+        return Date.now() - lastSubmit < RATE_LIMIT_MS;
+    }
+    function getRemainingCooldown() {
+        const lastSubmit = parseInt(localStorage.getItem('guestbook_last_submit') || '0', 10);
+        return Math.ceil((RATE_LIMIT_MS - (Date.now() - lastSubmit)) / 1000);
+    }
+
     // Submit new entry
     if (submitBtn && noteInput) {
         submitBtn.addEventListener('click', async () => {
@@ -3331,6 +3342,15 @@ Type your message below and click
                 setTimeout(() => {
                     noteInput.style.borderColor = '';
                 }, 1500);
+                return;
+            }
+
+            // Check rate limit
+            if (isRateLimited()) {
+                noteInput.placeholder = `Please wait ${getRemainingCooldown()}s before submitting again.`;
+                setTimeout(() => {
+                    noteInput.placeholder = 'Type your message here...';
+                }, 3000);
                 return;
             }
 
@@ -3345,6 +3365,9 @@ Type your message below and click
             submitBtn.disabled = false;
 
             if (savedNote) {
+                // Record submission time for rate limiting
+                localStorage.setItem('guestbook_last_submit', Date.now().toString());
+
                 // Add to local array
                 notes.unshift({
                     id: savedNote.id,
