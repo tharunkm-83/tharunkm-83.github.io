@@ -303,7 +303,6 @@ function loadContent() {
     }).join('');
     document.getElementById('unique-abilities').innerHTML = abilitiesHtml;
 
-    document.getElementById('resume-line').innerHTML = CONTENT.resumeLine;
 
     // Update Resume tab link (uses RESUME_URL constant from content.js)
     const resumeTabLink = document.getElementById('resume-tab-link');

@@ -88,8 +88,6 @@ const CONTENT = {
         { text: "recognizing obscure Punjabi songs", url: "#", highlight: "" }
     ],
 
-    // Resume line for recruiters (uses RESUME_URL constant)
-    resumeLine: `If you're recruiting, here's the <a href="${RESUME_URL}" target="_blank" class="highlight peach">link to my resume</a>.`,
 
     // Name in Kannada (for hover effect)
     nameKannada: "ಶ್ರದ್ಧಾ ಕುಲಕರ್ಣಿ",
