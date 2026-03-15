@@ -154,7 +154,7 @@ const CONTENT = {
     // ==========================================
     experiences: [
         {
-            title: "Product Management & Analytics in Healthcare",
+            title: "AI Consulting & Analytics in Healthcare",
             company: "ZS Associates - Boutique Pharma Consulting Firm",
             companyUrl: "https://www.zs.com/",
             date: "2023 — Present",
