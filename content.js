@@ -180,7 +180,7 @@ const CONTENT = {
                 Leveraged SQL and Python for demand forecasting, segmentation analysis, price elasticity modeling, competitor benchmarking driving insights that optimized revenue across 1,200 hotels</p>
 
                 <p>★ <strong>Leadership:</strong><br>
-                Deputy lead of a 13-person team, mentoring new joiners and equipping members with SQL skills to extract insights from unstructured data, optimizing hotel revenue during high-footfall nights and navigating slow seasons</p>
+                Deputy lead of a 13-person team, mentoring new joiners and developing members' analytical skills to extract insights from unstructured data. Conducted analytics that supported the optimization of US hotel revenue during high-footfall events (such as F1 races and Taylor Swift concerts) and during slow periods caused by disruptions like snowstorms and floods.</p>
             `
         },
         {
