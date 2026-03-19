@@ -2238,7 +2238,7 @@ a, button, .tab, .highlight, [role="button"] {
     .experience-header h3,
     .project-card h3,
     .content-card h3 {
-        font-size: 0.9375rem;
+        font-size: 0.875rem;
     }
 
     .experience-date {
@@ -2251,7 +2251,7 @@ a, button, .tab, .highlight, [role="button"] {
 
     .experience-brief,
     .project-brief {
-        font-size: 0.9375rem;
+        font-size: 0.875rem;
         line-height: 1.7;
     }
 
@@ -2293,7 +2293,7 @@ a, button, .tab, .highlight, [role="button"] {
     /* Community cards */
     .community-expanded p,
     .community-brief {
-        font-size: 0.9375rem;
+        font-size: 0.875rem;
         line-height: 1.7;
     }
 
