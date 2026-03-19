@@ -1190,9 +1190,6 @@ function initProjectToggles() {
 
                 // Scroll to keep card header visible
                 card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-
-                // Refresh text reveal for new content
-                setTimeout(() => refreshTextReveal(), 150);
             }
         });
     });
@@ -1308,9 +1305,6 @@ function initCommunityToggles() {
 
                 // Scroll to keep card header visible
                 card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-
-                // Refresh text reveal for new content
-                setTimeout(() => refreshTextReveal(), 150);
             }
         });
     });
@@ -1545,9 +1539,7 @@ function initTextReveal() {
         '#about-content .about-list li', '.beyond-work-item',
         // Work Section
         '#work .section-title', '#work .section-intro',
-        // Expanded Content (loaded on click)
-        '.project-expanded p', '.project-expanded li',
-        '.community-expanded p', '.community-expanded li',
+        // About expanded content
         '.background-expanded p', '.beyond-work-expanded p'
     ];
 
