@@ -2236,7 +2236,8 @@ a, button, .tab, .highlight, [role="button"] {
     }
 
     .experience-header h3,
-    .project-card h3 {
+    .project-card h3,
+    .content-card h3 {
         font-size: 0.9375rem;
     }
 
@@ -4447,6 +4448,7 @@ a .reveal-word {
     .experience-brief,
     .project-brief,
     .community-brief,
+    .content-card h3,
     .experience-expanded p,
     .experience-expanded li,
     .community-expanded p,
