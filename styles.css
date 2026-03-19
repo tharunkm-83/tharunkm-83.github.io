@@ -860,20 +860,22 @@ a, button, .tab, .highlight, [role="button"] {
     background: var(--highlight-lavender);
 }
 
-.highlight:hover {
-    transform: scale(1.02);
-}
+@media (hover: hover) {
+    .highlight:hover {
+        transform: scale(1.02);
+    }
 
-.highlight.peach:hover {
-    background: var(--highlight-peach-hover);
-}
+    .highlight.peach:hover {
+        background: var(--highlight-peach-hover);
+    }
 
-.highlight.blue:hover {
-    background: var(--highlight-blue-hover);
-}
+    .highlight.blue:hover {
+        background: var(--highlight-blue-hover);
+    }
 
-.highlight.lavender:hover {
-    background: var(--highlight-lavender-hover);
+    .highlight.lavender:hover {
+        background: var(--highlight-lavender-hover);
+    }
 }
 
 .highlight-link {
@@ -889,9 +891,11 @@ a, button, .tab, .highlight, [role="button"] {
     -webkit-box-decoration-break: clone;
 }
 
-.highlight-link:hover {
-    background: var(--highlight-yellow-hover);
-    transform: scale(1.02);
+@media (hover: hover) {
+    .highlight-link:hover {
+        background: var(--highlight-yellow-hover);
+        transform: scale(1.02);
+    }
 }
 
 .highlight-link.pink {
@@ -1024,9 +1028,11 @@ a, button, .tab, .highlight, [role="button"] {
     transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
-.content-card:hover {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10);
-    transform: translateY(-3px) scale(1.01);
+@media (hover: hover) {
+    .content-card:hover {
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10);
+        transform: translateY(-3px) scale(1.01);
+    }
 }
 
 
@@ -1071,9 +1077,11 @@ a, button, .tab, .highlight, [role="button"] {
     transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
-.experience-item:hover {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10);
-    transform: translateY(-3px) scale(1.01);
+@media (hover: hover) {
+    .experience-item:hover {
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10);
+        transform: translateY(-3px) scale(1.01);
+    }
 }
 
 .experience-header {
@@ -1369,9 +1377,11 @@ a, button, .tab, .highlight, [role="button"] {
     padding-left: 44px;
 }
 
-.project-card:hover {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10);
-    transform: translateY(-3px) scale(1.01);
+@media (hover: hover) {
+    .project-card:hover {
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10);
+        transform: translateY(-3px) scale(1.01);
+    }
 }
 
 /* Drag handle — 6-dot grip, fades in on card hover */

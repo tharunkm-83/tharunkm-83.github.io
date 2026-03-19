@@ -637,9 +637,6 @@ function initExperienceToggles() {
 
                 // Scroll to keep card header visible
                 card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-
-                // Refresh text reveal for new content
-                setTimeout(() => refreshTextReveal(), 150);
             }
         });
     });
@@ -1548,10 +1545,7 @@ function initTextReveal() {
         '#about-content .about-list li', '.beyond-work-item',
         // Work Section
         '#work .section-title', '#work .section-intro',
-        '.experience-header h3', '.experience-company', '.experience-brief',
         // Expanded Content (loaded on click)
-        '.experience-expanded p', '.experience-expanded li',
-        '.experience-expanded h4', '.experience-expanded .project-cta',
         '.project-expanded p', '.project-expanded li',
         '.community-expanded p', '.community-expanded li',
         '.background-expanded p', '.beyond-work-expanded p'
