@@ -516,7 +516,7 @@ a, button, .tab, .highlight, [role="button"] {
     position: relative;
     padding-left: 20px;
     margin-bottom: 14px;
-    font-size: 1rem;
+    font-size: 1.0625rem;
     line-height: 1.7;
 }
 
