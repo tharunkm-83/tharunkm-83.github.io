@@ -1366,6 +1366,17 @@ function initNavigation() {
                 _programmaticScrollTimer = setTimeout(() => {
                     _programmaticScrolling = false;
                 }, 600);
+
+                // Correction for layout shifts from async loading (e.g. Supabase projects
+                // rendering after click, expanding the work section and pushing thoughts down).
+                // Fires after smooth scroll + buffer; instant-jumps only if meaningfully off.
+                setTimeout(() => {
+                    const correctedOffset = window.innerWidth <= 900 ? 80 : 0;
+                    const correctedTop = targetSection.getBoundingClientRect().top + window.pageYOffset - correctedOffset;
+                    if (Math.abs(correctedTop - window.pageYOffset) > 20) {
+                        window.scrollTo({ top: correctedTop, behavior: 'instant' });
+                    }
+                }, 800);
             }
         });
     });
