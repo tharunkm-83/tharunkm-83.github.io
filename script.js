@@ -473,20 +473,15 @@ async function loadSubstackPosts() {
     const CACHE_EXPIRY = 24 * 60 * 60 * 1000; // 24 hour cache
     const RSS_URL = 'https://shraddhaha.substack.com/feed';
 
-    // Always show content immediately - cache first, then fallback
+    // Show cached content immediately if available, otherwise show skeleton loader
     let hasCachedContent = false;
     const cached = localStorage.getItem(CACHE_KEY);
     if (cached) {
         try {
-            const { posts, timestamp } = JSON.parse(cached);
+            const { posts } = JSON.parse(cached);
             if (posts && posts.length > 0) {
                 renderThoughtsPosts(posts);
                 hasCachedContent = true;
-
-                // If cache is still fresh, we're done
-                if (Date.now() - timestamp < CACHE_EXPIRY) {
-                    return;
-                }
             }
         } catch (e) {
             // Invalid cache, continue
@@ -494,11 +489,11 @@ async function loadSubstackPosts() {
     }
 
     if (!hasCachedContent) {
-        // No valid cache - show real posts from content.js immediately
-        renderThoughtsFallback();
+        // No cache - show skeleton while fetching
+        renderThoughtsLoading();
     }
 
-    // Refresh in background (UI already shows content)
+    // Always fetch fresh data in background (updates UI when done)
     fetchSubstackInBackground(RSS_URL, CACHE_KEY);
 }
 
@@ -612,6 +607,22 @@ function renderThoughtsFallback() {
         date: ''
     }));
     renderThoughtsPosts(posts);
+}
+
+function renderThoughtsLoading() {
+    // Show skeleton rows while RSS fetch is in progress
+    const skeletons = Array.from({ length: 5 }, (_, i) => `
+        <li class="thoughts-item thoughts-skeleton">
+            <span class="thoughts-number">${i + 1}.</span>
+            <div class="thoughts-content">
+                <span class="skeleton-line skeleton-title"></span>
+                <span class="skeleton-line skeleton-date"></span>
+            </div>
+        </li>
+    `).join('');
+    document.getElementById('thoughts-list').innerHTML = `
+        <ol class="thoughts-posts-list">${skeletons}</ol>
+    `;
 }
 
 /**
