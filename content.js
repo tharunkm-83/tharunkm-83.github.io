@@ -232,6 +232,7 @@ const CONTENT = {
                 Gained hands-on experience with electronics procurement and supply chains, working directly in factories with high-value equipment to understand sourcing, maintenance, and operational workflows.</p>
 
                 <p><a href="https://drive.google.com/file/d/1hSBLpDlTsVo8vN4z47Ugahn0FP5cryWy/view?usp=sharing" target="_blank" class="project-cta highlight blue">View Project Demo Video →</a></p>
+                <p><a href="https://drive.google.com/file/d/1OysW6dYF1CPZ64Mszi-8GOQfVCEZBtyF/view?usp=sharing" target="_blank" class="project-cta highlight blue">Horn and Microstrip Antenna Design by Simulation-Driven Optimization →</a></p>
             `
         }
     ],
