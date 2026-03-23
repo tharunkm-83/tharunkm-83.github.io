@@ -469,37 +469,28 @@ function loadContent() {
  * Optimized: Shows cached/fallback content immediately, refreshes in background
  */
 async function loadSubstackPosts() {
-    const CACHE_KEY = 'substack-posts-v2';
-    const CACHE_EXPIRY = 6 * 60 * 60 * 1000; // 6 hour cache
+    const CACHE_KEY = 'substack-posts-v3';
+    const CACHE_EXPIRY = 4 * 60 * 60 * 1000; // 4 hour cache
     const RSS_URL = 'https://shraddhaha.substack.com/feed';
 
-    // Show cached content immediately if available, otherwise show skeleton loader
-    let hasCachedContent = false;
+    // Show cached content immediately if still fresh, otherwise fetch now
     const cached = localStorage.getItem(CACHE_KEY);
     if (cached) {
         try {
             const { posts, timestamp } = JSON.parse(cached);
-            if (posts && posts.length > 0) {
+            if (posts && posts.length > 0 && Date.now() - timestamp < CACHE_EXPIRY) {
+                // Cache is fresh — render immediately, no fetch needed
                 renderThoughtsPosts(posts);
-                hasCachedContent = true;
-
-                // Cache still fresh — skip fetching
-                if (Date.now() - timestamp < CACHE_EXPIRY) {
-                    return;
-                }
+                return;
             }
         } catch (e) {
-            // Invalid cache, continue
+            // Invalid cache, continue to fetch
         }
     }
 
-    if (!hasCachedContent) {
-        // No cache - show skeleton while fetching
-        renderThoughtsLoading();
-    }
-
-    // Cache stale or missing — fetch fresh data in background
-    fetchSubstackInBackground(RSS_URL, CACHE_KEY);
+    // Cache stale or missing — show skeleton and fetch immediately
+    renderThoughtsLoading();
+    await fetchSubstackInBackground(RSS_URL, CACHE_KEY);
 }
 
 // Background fetch - doesn't block UI
@@ -1426,8 +1417,17 @@ function initRouting() {
     if (!targetSection) return;
 
     var offset = window.innerWidth <= 900 ? 80 : 0;
+    // Suppress scroll spy during routing scroll so it doesn't overwrite the URL
+    _programmaticScrolling = true;
     // Use 'instant' so user lands directly on the section without scroll animation
     window.scrollTo({ top: targetSection.offsetTop - offset, behavior: 'instant' });
+    // After instant scroll, restore scroll spy and lock in the correct URL
+    requestAnimationFrame(() => {
+        _programmaticScrolling = false;
+        var correctPath = sectionId === 'hello' ? '/' : '/' + sectionId;
+        history.replaceState(null, '', correctPath);
+        _lastScrollSpySection = sectionId;
+    });
 
     var matchingLink = document.querySelector('.nav-link[data-section="' + sectionId + '"]');
     if (matchingLink) updateActiveNav(matchingLink);
@@ -1916,7 +1916,8 @@ function initPhotoGallery() {
             const { data, error } = await supabaseClient
                 .from('photos')
                 .select('*')
-                .order('created_at', { ascending: false });
+                .order('sort_order', { ascending: true })
+                .order('created_at', { ascending: false }); // fallback for rows with sort_order = 0
 
             if (error) {
                 console.error('Error loading photos from Supabase:', error);
@@ -1934,7 +1935,8 @@ function initPhotoGallery() {
                     caption: photo.caption || '',
                     zoom: photo.zoom || 100,
                     posX: photo.pos_x || 0,
-                    posY: photo.pos_y || 0
+                    posY: photo.pos_y || 0,
+                    sortOrder: photo.sort_order ?? 0
                 });
             });
 
@@ -2088,6 +2090,7 @@ function initPhotoGallery() {
                 </div>
                 <div class="polaroid-caption-display">${photo.caption || ''}</div>
                 ${isAdminUser ? `
+                    <div class="polaroid-drag-handle admin-only" title="Drag to reorder">⠿</div>
                     <input type="text" class="polaroid-caption admin-only" value="${photo.caption || ''}"
                            placeholder="add caption..." data-id="${photo.id}">
                     <button class="polaroid-delete admin-only" data-id="${photo.id}">&times;</button>
@@ -2098,9 +2101,14 @@ function initPhotoGallery() {
         // Add event listeners for captions (admin only)
         if (isAdminUser) {
             gallery.querySelectorAll('.polaroid-caption.admin-only').forEach(input => {
-                input.addEventListener('change', (e) => {
-                    const photoId = parseInt(e.target.dataset.id);
-                    updateCaption(photoId, e.target.value);
+                input.addEventListener('blur', (e) => {
+                    updateCaption(parseInt(e.target.dataset.id), e.target.value);
+                });
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        e.target.blur(); // triggers blur → save
+                    }
                 });
                 input.addEventListener('click', (e) => e.stopPropagation());
             });
@@ -2113,6 +2121,50 @@ function initPhotoGallery() {
                     deletePhoto(photoId);
                 });
             });
+
+            // Init drag-to-reorder (Sortable.js)
+            if (typeof Sortable !== 'undefined') {
+                if (gallery._sortableInstance) gallery._sortableInstance.destroy();
+                const sortable = new Sortable(gallery, {
+                    animation: 150,
+                    handle: '.polaroid-drag-handle',
+                    ghostClass: 'sortable-ghost',
+                    chosenClass: 'sortable-chosen',
+                    scroll: true,
+                    scrollSensitivity: 80,
+                    scrollSpeed: 10,
+                    onEnd: async function() {
+                        sortable.option('disabled', true);
+                        await persistPhotoSortOrder();
+                        sortable.option('disabled', false);
+                    }
+                });
+                gallery._sortableInstance = sortable;
+            }
+        }
+    }
+
+    // Persist photo sort order to Supabase after drag-and-drop
+    async function persistPhotoSortOrder() {
+        if (!supabaseClient) return;
+        const items = gallery.querySelectorAll('.polaroid[data-id]');
+        const updates = Array.from(items).map((el, index) => ({
+            id: parseInt(el.dataset.id),
+            sort_order: index
+        }));
+        // Update in-memory array to match new order
+        const categoryPhotos = photos[currentCategory];
+        const idToPhoto = Object.fromEntries(categoryPhotos.map(p => [p.id, p]));
+        photos[currentCategory] = updates.map(({ id }) => idToPhoto[id]).filter(Boolean);
+        // Persist to Supabase
+        try {
+            await Promise.all(
+                updates.map(({ id, sort_order }) =>
+                    supabaseClient.from('photos').update({ sort_order }).eq('id', id)
+                )
+            );
+        } catch (err) {
+            console.error('Failed to save photo sort order:', err);
         }
     }
 
@@ -2548,6 +2600,13 @@ function initContentCalendar() {
         // Add click handlers to days - switch to list view and scroll to date
         calendarGrid.querySelectorAll('.calendar-day:not(.empty)').forEach(dayEl => {
             dayEl.addEventListener('click', () => {
+                // On touch devices, briefly show tooltip as visual feedback before switching
+                if (window.matchMedia('(max-width: 600px)').matches && dayEl.querySelector('.calendar-day-tooltip')) {
+                    document.querySelectorAll('.calendar-day.tooltip-active').forEach(d => d.classList.remove('tooltip-active'));
+                    dayEl.classList.add('tooltip-active');
+                    clearTimeout(dayEl._tooltipTimer);
+                    dayEl._tooltipTimer = setTimeout(() => dayEl.classList.remove('tooltip-active'), 1200);
+                }
                 const dateStr = dayEl.dataset.date;
                 switchToListViewWithHighlight(dateStr);
             });
@@ -2571,7 +2630,7 @@ function initContentCalendar() {
         setTimeout(() => {
             const highlightedGroup = document.querySelector('.content-date-group.highlighted');
             if (highlightedGroup) {
-                highlightedGroup.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                highlightedGroup.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         }, 100);
     }

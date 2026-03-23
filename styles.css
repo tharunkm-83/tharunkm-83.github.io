@@ -45,7 +45,7 @@
 html {
     scroll-behavior: smooth;
     font-size: clamp(16px, 1.1vw, 19px);
-    overflow-x: hidden;
+    overflow-x: clip;
     -webkit-text-size-adjust: 100%; /* Prevent iOS from auto-scaling text */
     text-size-adjust: 100%;
 }
@@ -2648,6 +2648,9 @@ a .reveal-word {
     min-height: 28px;
     padding: 4px;
     letter-spacing: 0.5px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
 }
 
 /* Empty Polaroid Placeholder */
@@ -2695,6 +2698,9 @@ a .reveal-word {
     outline: none;
     cursor: text;
     letter-spacing: 0.5px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
 }
 
 /* Hide caption display when admin input is shown */
@@ -2710,6 +2716,42 @@ a .reveal-word {
 .polaroid-caption::placeholder {
     color: #aaa;
     font-style: italic;
+}
+
+/* Drag handle on polaroid (admin only) */
+.polaroid-drag-handle {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    cursor: grab;
+    font-size: 1.1rem;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    z-index: 10;
+    user-select: none;
+    color: #555;
+    line-height: 1;
+}
+
+.polaroid:hover .polaroid-drag-handle {
+    opacity: 0.6;
+}
+
+.polaroid-drag-handle:hover {
+    opacity: 1 !important;
+}
+
+.polaroid-drag-handle:active {
+    cursor: grabbing;
+}
+
+.polaroid.sortable-ghost {
+    opacity: 0.3;
+}
+
+.polaroid.sortable-chosen {
+    opacity: 0.8;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
 }
 
 /* Delete button on polaroid */
@@ -4282,9 +4324,14 @@ a .reveal-word {
         font-size: 0.625rem;
     }
 
-    /* Hide tooltip on mobile - use tap instead */
-    .calendar-day-tooltip {
-        display: none;
+    /* Tooltip on mobile: hide hover trigger, show on tap via JS class */
+    .calendar-day:hover .calendar-day-tooltip {
+        opacity: 0;
+        visibility: hidden;
+    }
+    .calendar-day.tooltip-active .calendar-day-tooltip {
+        opacity: 1;
+        visibility: visible;
     }
 
     /* Date-grouped list view on mobile */
@@ -4678,8 +4725,31 @@ a .reveal-word {
     background: #fff;
     border: 2px inset #808080;
     margin: 2px;
-    height: 350px;
+    height: 500px;
     overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #808080 #c0c0c0;
+}
+
+.win95-editor::-webkit-scrollbar {
+    width: 12px;
+}
+
+.win95-editor::-webkit-scrollbar-track {
+    background: #c0c0c0;
+    border-left: 1px solid #808080;
+}
+
+.win95-editor::-webkit-scrollbar-thumb {
+    background: #808080;
+    border: 1px solid #404040;
+    border-radius: 0;
+}
+
+.win95-editor::-webkit-scrollbar-button {
+    background: #c0c0c0;
+    border: 1px solid #808080;
+    height: 12px;
 }
 
 .win95-textarea {
@@ -4848,7 +4918,7 @@ a .reveal-word {
     }
 
     .win95-editor {
-        height: 140px;
+        height: 320px;
     }
 
     .win95-textarea {
@@ -4890,7 +4960,7 @@ a .reveal-word {
 
 @media (max-width: 375px) {
     .win95-editor {
-        height: 120px;
+        height: 280px;
     }
 }
 
