@@ -3053,7 +3053,8 @@ a .reveal-word {
 /* Calendar View */
 .content-calendar-view {
     margin-top: 16px;
-    max-width: var(--content-max-width); /* 600px — keeps square cells small enough to fit on screen */
+    /* Width tracks viewport height so row height = column width (square cells, 5 rows visible) */
+    max-width: clamp(528px, calc((100vh - 380px) / 5 * 7 + 24px), 724px);
 }
 
 .calendar-header {
@@ -3114,8 +3115,8 @@ a .reveal-word {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 4px;
-    /* Row height = column width = (600px container - 6 gaps) / 7 ≈ 82px → square cells */
-    grid-auto-rows: calc((var(--content-max-width) - 6 * 4px) / 7);
+    /* Row height = column width → square cells, capped at 100px so 5 rows fit on ~900px viewport */
+    grid-auto-rows: clamp(72px, calc((100vh - 380px) / 5), 100px);
 }
 
 .calendar-day {
