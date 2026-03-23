@@ -1329,16 +1329,17 @@ function initProjectPreview() {
         if (!url) return;
 
         if (!isTouchOnly) {
-            // Desktop: show on mouseenter, hide on mouseleave
-            card.addEventListener('mouseenter', () => {
+            // Desktop: show near cursor, follow cursor, hide on leave
+            card.addEventListener('mouseenter', (e) => {
                 clearTimeout(hideTimeout);
                 previewImg.src = url;
-                const rect = card.getBoundingClientRect();
-                positionProjectPreview(previewCard, rect);
+                positionProjectPreview(previewCard, e.clientX, e.clientY);
                 previewCard.classList.add('visible');
             });
+            card.addEventListener('mousemove', (e) => {
+                positionProjectPreview(previewCard, e.clientX, e.clientY);
+            });
             card.addEventListener('mouseleave', () => {
-                // Small delay to prevent flicker when briefly leaving card edge
                 hideTimeout = setTimeout(() => previewCard.classList.remove('visible'), 60);
             });
         } else {
@@ -1351,27 +1352,26 @@ function initProjectPreview() {
     });
 }
 
-function positionProjectPreview(previewCard, cardRect) {
+function positionProjectPreview(previewCard, cursorX, cursorY) {
     const PREVIEW_W = 280;
-    const GAP = 16;
+    const OFFSET = 20; // distance from cursor
     const vw = window.innerWidth;
     const vh = window.innerHeight;
 
-    let left = cardRect.right + GAP;
-    // Flip to left if not enough room on the right
-    if (left + PREVIEW_W > vw - GAP) {
-        left = cardRect.left - PREVIEW_W - GAP;
+    let left = cursorX + OFFSET;
+    // Flip to left of cursor if not enough room on the right
+    if (left + PREVIEW_W > vw - 8) {
+        left = cursorX - PREVIEW_W - OFFSET;
     }
-    // Clamp left so it doesn't go off-screen
-    left = Math.max(GAP, left);
+    left = Math.max(8, left);
 
-    // Align top with card, clamp to viewport
-    let top = cardRect.top;
+    let top = cursorY + OFFSET;
     const estimatedH = previewCard.offsetHeight || 180;
-    if (top + estimatedH > vh - GAP) {
-        top = vh - estimatedH - GAP;
+    // Flip above cursor if not enough room below
+    if (top + estimatedH > vh - 8) {
+        top = cursorY - estimatedH - OFFSET;
     }
-    top = Math.max(GAP, top);
+    top = Math.max(8, top);
 
     previewCard.style.left = left + 'px';
     previewCard.style.top = top + 'px';
