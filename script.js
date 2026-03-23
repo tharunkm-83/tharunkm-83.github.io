@@ -473,24 +473,33 @@ async function loadSubstackPosts() {
     const CACHE_EXPIRY = 4 * 60 * 60 * 1000; // 4 hour cache
     const RSS_URL = 'https://shraddhaha.substack.com/feed';
 
-    // Show cached content immediately if still fresh, otherwise fetch now
+    // Stale-while-revalidate: show any cached data immediately, then refresh if stale
     const cached = localStorage.getItem(CACHE_KEY);
+    let hasCache = false;
+    let isFresh = false;
+
     if (cached) {
         try {
             const { posts, timestamp } = JSON.parse(cached);
-            if (posts && posts.length > 0 && Date.now() - timestamp < CACHE_EXPIRY) {
-                // Cache is fresh — render immediately, no fetch needed
-                renderThoughtsPosts(posts);
-                return;
+            if (posts && posts.length > 0) {
+                hasCache = true;
+                isFresh = Date.now() - timestamp < CACHE_EXPIRY;
+                renderThoughtsPosts(posts); // show stale-or-fresh cache immediately
             }
         } catch (e) {
-            // Invalid cache, continue to fetch
+            // Invalid cache, fall through
         }
     }
 
-    // Cache stale or missing — show skeleton and fetch immediately
-    renderThoughtsLoading();
-    await fetchSubstackInBackground(RSS_URL, CACHE_KEY);
+    if (!hasCache) {
+        // No cache at all — show static fallback immediately while fetching
+        renderThoughtsFallback();
+    }
+
+    if (!isFresh) {
+        // Fire-and-forget background fetch; updates UI when done
+        fetchSubstackInBackground(RSS_URL, CACHE_KEY);
+    }
 }
 
 // Background fetch - doesn't block UI
@@ -1417,17 +1426,26 @@ function initRouting() {
     if (!targetSection) return;
 
     var offset = window.innerWidth <= 900 ? 80 : 0;
-    // Suppress scroll spy during routing scroll so it doesn't overwrite the URL
-    _programmaticScrolling = true;
-    // Use 'instant' so user lands directly on the section without scroll animation
-    window.scrollTo({ top: targetSection.offsetTop - offset, behavior: 'instant' });
-    // After instant scroll, restore scroll spy and lock in the correct URL
-    requestAnimationFrame(() => {
-        _programmaticScrolling = false;
-        var correctPath = sectionId === 'hello' ? '/' : '/' + sectionId;
-        history.replaceState(null, '', correctPath);
-        _lastScrollSpySection = sectionId;
-    });
+    var correctPath = sectionId === 'hello' ? '/' : '/' + sectionId;
+
+    function doRoutingScroll() {
+        _programmaticScrolling = true;
+        window.scrollTo({ top: targetSection.offsetTop - offset, behavior: 'instant' });
+        requestAnimationFrame(() => {
+            _programmaticScrolling = false;
+            history.replaceState(null, '', correctPath);
+            _lastScrollSpySection = sectionId;
+        });
+    }
+
+    // Initial scroll — DOM is laid out but Supabase projects (async) may not have loaded yet
+    doRoutingScroll();
+
+    // Re-scroll after async content (projects from Supabase) may have injected DOM
+    // and shifted the target section's offsetTop.
+    if (sectionId !== 'hello') {
+        setTimeout(doRoutingScroll, 900);
+    }
 
     var matchingLink = document.querySelector('.nav-link[data-section="' + sectionId + '"]');
     if (matchingLink) updateActiveNav(matchingLink);

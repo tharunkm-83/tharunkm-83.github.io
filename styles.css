@@ -4725,7 +4725,7 @@ a .reveal-word {
     background: #fff;
     border: 2px inset #808080;
     margin: 2px;
-    height: 500px;
+    height: clamp(280px, calc(100vh - 430px), 500px);
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: #808080 #c0c0c0;
