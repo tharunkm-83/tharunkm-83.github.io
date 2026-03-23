@@ -1389,6 +1389,148 @@ a, button, .tab, .highlight, [role="button"] {
     }
 }
 
+/* ---- Project hover preview card (desktop) ---- */
+.project-preview-card {
+    position: fixed;
+    z-index: 200;
+    width: 280px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.14);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(8px) scale(0.97);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.project-preview-card.visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.project-preview-card img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* ---- Mobile preview bottom sheet ---- */
+.project-preview-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 390;
+    background: rgba(0, 0, 0, 0.35);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+}
+
+.project-preview-backdrop.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.project-preview-sheet {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 400;
+    background: var(--color-card-bg);
+    border-top: 1px solid var(--color-border);
+    border-radius: 16px 16px 0 0;
+    padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+}
+
+.project-preview-sheet.visible {
+    transform: translateY(0);
+}
+
+.project-preview-sheet .preview-sheet-close {
+    display: flex;
+    margin-left: auto;
+    margin-bottom: 12px;
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    line-height: 1;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    padding: 4px 8px;
+}
+
+.project-preview-sheet .preview-sheet-img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    display: block;
+    margin-bottom: 12px;
+}
+
+.project-preview-sheet .preview-sheet-details-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 18px;
+    background: none;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    font-size: 0.875rem;
+    color: var(--color-text);
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.project-preview-sheet .preview-sheet-details-btn:hover {
+    border-color: var(--color-text);
+}
+
+/* ---- Admin modal: preview image thumbnail ---- */
+.preview-thumb {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 10px;
+    padding: 8px;
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+}
+
+.preview-thumb img {
+    width: 80px;
+    height: 56px;
+    object-fit: cover;
+    border-radius: 6px;
+    flex-shrink: 0;
+}
+
+.preview-remove-btn {
+    background: none;
+    border: 1px solid #e75480;
+    color: #e75480;
+    border-radius: 999px;
+    padding: 3px 10px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.preview-remove-btn:hover {
+    background: #e75480;
+    color: #fff;
+}
+
+.field-hint {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    font-weight: normal;
+}
+
 /* Drag handle — 6-dot grip, fades in on card hover */
 .drag-handle {
     position: absolute;

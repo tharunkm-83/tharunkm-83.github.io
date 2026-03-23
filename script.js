@@ -711,6 +711,7 @@ function initProjectsSection() {
                 expandedContent: p.expanded_content || '',
                 githubUrl: p.github_url || '',
                 demoUrl: p.demo_url || '',
+                previewImageUrl: p.preview_image_url || '',
                 sortOrder: p.sort_order || 0
             }));
         } catch (err) {
@@ -761,7 +762,7 @@ function initProjectsSection() {
 
             // data-project-id used by sortable reorder; data-project-index used by expand toggle
             return `
-                <article class="project-card${isAdminUser ? ' is-admin-card' : ''}" data-project-index="${index}" data-project-id="${proj.id}">
+                <article class="project-card${isAdminUser ? ' is-admin-card' : ''}" data-project-index="${index}" data-project-id="${proj.id}"${proj.previewImageUrl ? ` data-preview-url="${proj.previewImageUrl}"` : ''}>
                     ${isAdminUser ? `<div class="drag-handle" title="Drag to reorder" aria-hidden="true">${dragHandleSvg}</div>` : ''}
                     <h3><span class="highlight ${proj.highlight}">${proj.name}</span></h3>
                     <p class="project-brief">${proj.briefDescription}</p>
@@ -776,6 +777,7 @@ function initProjectsSection() {
             // Admin: always flat list (no carousel) so drag-to-reorder works across all projects
             projectsList.innerHTML = state.projects.map((proj, index) => buildCardHtml(proj, index)).join('');
             initProjectToggles();
+            initProjectPreview();
             initAdminSortable(state, projectsList);
             return;
         }
@@ -916,6 +918,7 @@ function initProjectsSection() {
         }
 
         initProjectToggles();
+        initProjectPreview();
     }
 
     // Expose renderProjects for global handlers
@@ -1021,6 +1024,10 @@ function projectOpenAddModal() {
     document.getElementById('project-github').value = '';
     document.getElementById('project-demo').value = '';
     document.getElementById('project-highlight').value = 'blue';
+    document.getElementById('project-preview-image').value = '';
+    document.getElementById('project-preview-url').value = '';
+    document.getElementById('project-preview-thumb').style.display = 'none';
+    document.getElementById('project-preview-thumb-img').src = '';
     document.getElementById('project-save').textContent = 'Save Project';
     document.getElementById('project-modal').classList.add('active');
     document.body.style.overflow = 'hidden';
@@ -1046,6 +1053,17 @@ window.projectEditItem = function(projectId) {
     document.getElementById('project-github').value = proj.githubUrl || '';
     document.getElementById('project-demo').value = proj.demoUrl || '';
     document.getElementById('project-highlight').value = proj.highlight || 'blue';
+    document.getElementById('project-preview-image').value = '';
+    document.getElementById('project-preview-url').value = proj.previewImageUrl || '';
+    const thumb = document.getElementById('project-preview-thumb');
+    const thumbImg = document.getElementById('project-preview-thumb-img');
+    if (proj.previewImageUrl) {
+        thumbImg.src = proj.previewImageUrl;
+        thumb.style.display = 'flex';
+    } else {
+        thumbImg.src = '';
+        thumb.style.display = 'none';
+    }
     document.getElementById('project-save').textContent = 'Update Project';
     document.getElementById('project-modal').classList.add('active');
     document.body.style.overflow = 'hidden';
@@ -1083,6 +1101,8 @@ window.projectSaveItem = async function() {
     const demoUrl = document.getElementById('project-demo').value.trim();
     const highlight = document.getElementById('project-highlight').value;
     const saveBtn = document.getElementById('project-save');
+    const imageFile = document.getElementById('project-preview-image').files[0];
+    let previewImageUrl = document.getElementById('project-preview-url').value.trim();
 
     if (!name || !briefDescription) {
         alert('Project title and short description are required.');
@@ -1098,6 +1118,26 @@ window.projectSaveItem = async function() {
     saveBtn.disabled = true;
 
     try {
+        // Upload preview image if a new file was selected
+        if (imageFile) {
+            saveBtn.textContent = 'Uploading image...';
+            const ext = imageFile.name.split('.').pop().toLowerCase();
+            const filename = `project-${state.currentEditId || 'new'}-${Date.now()}.${ext}`;
+            const { error: uploadError } = await supabaseClient.storage
+                .from('project-previews')
+                .upload(filename, imageFile, { upsert: true });
+            if (uploadError) {
+                alert('Image upload failed: ' + uploadError.message);
+                saveBtn.textContent = state.currentEditId ? 'Update Project' : 'Save Project';
+                saveBtn.disabled = false;
+                return;
+            }
+            const { data: urlData } = supabaseClient.storage
+                .from('project-previews')
+                .getPublicUrl(filename);
+            previewImageUrl = urlData.publicUrl;
+        }
+
         if (state.currentEditId) {
             // Update
             const { error } = await supabaseClient
@@ -1108,7 +1148,8 @@ window.projectSaveItem = async function() {
                     brief_description: briefDescription,
                     expanded_content: expandedContent || null,
                     github_url: githubUrl || null,
-                    demo_url: demoUrl || null
+                    demo_url: demoUrl || null,
+                    preview_image_url: previewImageUrl || null
                 })
                 .eq('id', state.currentEditId);
 
@@ -1121,7 +1162,7 @@ window.projectSaveItem = async function() {
 
             const idx = state.projects.findIndex(p => p.id === state.currentEditId);
             if (idx !== -1) {
-                state.projects[idx] = { ...state.projects[idx], name, highlight, briefDescription, expandedContent, githubUrl, demoUrl };
+                state.projects[idx] = { ...state.projects[idx], name, highlight, briefDescription, expandedContent, githubUrl, demoUrl, previewImageUrl };
             }
         } else {
             // Insert
@@ -1134,7 +1175,8 @@ window.projectSaveItem = async function() {
                     expanded_content: expandedContent || null,
                     github_url: githubUrl || null,
                     demo_url: demoUrl || null,
-                    sort_order: state.projects.length  // append at end of current list
+                    preview_image_url: previewImageUrl || null,
+                    sort_order: state.projects.length
                 }])
                 .select();
 
@@ -1154,6 +1196,7 @@ window.projectSaveItem = async function() {
                 expandedContent: saved.expanded_content || '',
                 githubUrl: saved.github_url || '',
                 demoUrl: saved.demo_url || '',
+                previewImageUrl: saved.preview_image_url || '',
                 sortOrder: saved.sort_order || 0
             });
         }
@@ -1167,6 +1210,34 @@ window.projectSaveItem = async function() {
     saveBtn.textContent = 'Save Project';
     saveBtn.disabled = false;
 };
+
+// Wire up the "Remove" button for the preview image thumbnail in the admin modal
+document.addEventListener('DOMContentLoaded', () => {
+    const removeBtn = document.getElementById('project-preview-remove');
+    if (removeBtn) {
+        removeBtn.addEventListener('click', () => {
+            document.getElementById('project-preview-image').value = '';
+            document.getElementById('project-preview-url').value = '';
+            document.getElementById('project-preview-thumb').style.display = 'none';
+            document.getElementById('project-preview-thumb-img').src = '';
+        });
+    }
+
+    // Show thumbnail preview when a file is selected
+    const fileInput = document.getElementById('project-preview-image');
+    if (fileInput) {
+        fileInput.addEventListener('change', () => {
+            const file = fileInput.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('project-preview-thumb-img').src = e.target.result;
+                document.getElementById('project-preview-thumb').style.display = 'flex';
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+});
 
 // Escape key for project modal
 document.addEventListener('keydown', (e) => {
@@ -1210,6 +1281,139 @@ function initProjectToggles() {
             }
         });
     });
+}
+
+/**
+ * Project Preview — floating image on desktop hover, bottom sheet on mobile tap
+ */
+function initProjectPreview() {
+    const isTouchOnly = window.matchMedia('(hover: none)').matches;
+
+    // Create desktop floating preview card (once)
+    if (!document.getElementById('project-preview-card')) {
+        const el = document.createElement('div');
+        el.className = 'project-preview-card';
+        el.id = 'project-preview-card';
+        el.setAttribute('aria-hidden', 'true');
+        el.innerHTML = '<img id="project-preview-card-img" src="" alt="">';
+        document.body.appendChild(el);
+    }
+
+    // Create mobile bottom sheet (once)
+    if (!document.getElementById('project-preview-sheet')) {
+        const backdrop = document.createElement('div');
+        backdrop.className = 'project-preview-backdrop';
+        backdrop.id = 'project-preview-backdrop';
+        document.body.appendChild(backdrop);
+
+        const sheet = document.createElement('div');
+        sheet.className = 'project-preview-sheet';
+        sheet.id = 'project-preview-sheet';
+        sheet.innerHTML = `
+            <button class="preview-sheet-close" id="preview-sheet-close" aria-label="Close">&times;</button>
+            <img class="preview-sheet-img" id="preview-sheet-img" src="" alt="">
+            <button class="preview-sheet-details-btn" id="preview-sheet-details-btn">View Details &rarr;</button>
+        `;
+        document.body.appendChild(sheet);
+
+        document.getElementById('preview-sheet-close').addEventListener('click', hideProjectPreviewSheet);
+        backdrop.addEventListener('click', hideProjectPreviewSheet);
+    }
+
+    const previewCard = document.getElementById('project-preview-card');
+    const previewImg = document.getElementById('project-preview-card-img');
+    let hideTimeout;
+
+    document.querySelectorAll('.project-card[data-preview-url]').forEach(card => {
+        const url = card.dataset.previewUrl;
+        if (!url) return;
+
+        if (!isTouchOnly) {
+            // Desktop: show on mouseenter, hide on mouseleave
+            card.addEventListener('mouseenter', () => {
+                clearTimeout(hideTimeout);
+                previewImg.src = url;
+                const rect = card.getBoundingClientRect();
+                positionProjectPreview(previewCard, rect);
+                previewCard.classList.add('visible');
+            });
+            card.addEventListener('mouseleave', () => {
+                // Small delay to prevent flicker when briefly leaving card edge
+                hideTimeout = setTimeout(() => previewCard.classList.remove('visible'), 60);
+            });
+        } else {
+            // Mobile: tap card body (not buttons) to show bottom sheet
+            card.addEventListener('click', (e) => {
+                if (e.target.closest('.project-toggle, .project-link, .project-admin-btn, .drag-handle')) return;
+                showProjectPreviewSheet(card, url);
+            });
+        }
+    });
+}
+
+function positionProjectPreview(previewCard, cardRect) {
+    const PREVIEW_W = 280;
+    const GAP = 16;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+
+    let left = cardRect.right + GAP;
+    // Flip to left if not enough room on the right
+    if (left + PREVIEW_W > vw - GAP) {
+        left = cardRect.left - PREVIEW_W - GAP;
+    }
+    // Clamp left so it doesn't go off-screen
+    left = Math.max(GAP, left);
+
+    // Align top with card, clamp to viewport
+    let top = cardRect.top;
+    const estimatedH = previewCard.offsetHeight || 180;
+    if (top + estimatedH > vh - GAP) {
+        top = vh - estimatedH - GAP;
+    }
+    top = Math.max(GAP, top);
+
+    previewCard.style.left = left + 'px';
+    previewCard.style.top = top + 'px';
+}
+
+function showProjectPreviewSheet(card, url) {
+    document.getElementById('preview-sheet-img').src = url;
+    document.getElementById('project-preview-backdrop').classList.add('visible');
+    document.getElementById('project-preview-sheet').classList.add('visible');
+    // Freeze scroll without jumping to top
+    const scrollY = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
+    document.body.dataset.scrollY = scrollY;
+
+    // Wire "View Details" button to trigger the card's toggle (if it has one)
+    const oldBtn = document.getElementById('preview-sheet-details-btn');
+    const newBtn = oldBtn.cloneNode(true); // clone to remove old listeners
+    oldBtn.parentNode.replaceChild(newBtn, oldBtn);
+
+    const toggleBtn = card.querySelector('.project-toggle');
+    if (toggleBtn) {
+        newBtn.style.display = '';
+        newBtn.addEventListener('click', () => {
+            hideProjectPreviewSheet();
+            toggleBtn.click();
+        });
+    } else {
+        newBtn.style.display = 'none';
+    }
+}
+
+function hideProjectPreviewSheet() {
+    document.getElementById('project-preview-backdrop').classList.remove('visible');
+    document.getElementById('project-preview-sheet').classList.remove('visible');
+    // Restore scroll position without jump
+    const scrollY = parseInt(document.body.dataset.scrollY || '0', 10);
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.width = '';
+    window.scrollTo(0, scrollY);
 }
 
 /**
