@@ -304,11 +304,6 @@ function loadContent() {
     document.getElementById('unique-abilities').innerHTML = abilitiesHtml;
 
 
-    // Update Resume tab button (uses RESUME_URL constant from content.js)
-    const resumeTabLink = document.getElementById('resume-tab-link');
-    if (resumeTabLink && CONTENT.socialLinks.resume) {
-        resumeTabLink.onclick = () => window.open(CONTENT.socialLinks.resume, '_blank');
-    }
 
     // About section content
     const about = CONTENT.aboutContent;
@@ -1788,7 +1783,6 @@ function initTextReveal() {
         // Hello Section
         '#name', '#hello-intro', '#contact-line',
         '.unique-abilities h2', '.unique-abilities li',
-        '#resume-line',
         // About Section
         '#about .section-title', '#about .section-intro',
         '#about-content p', '#about-content .about-subtitle',

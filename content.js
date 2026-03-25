@@ -13,11 +13,6 @@
  * - Set highlight to "" (empty) for no highlight
  */
 
-// ==========================================
-// 🔗 RESUME LINK - UPDATE THIS ONE PLACE!
-// ==========================================
-// Change this URL and it will update everywhere on the site
-const RESUME_URL = "https://drive.google.com/file/d/1SFmuDZA7rhq0c2LfIF4jrWQV_uo4IO-0/view?usp=sharing";
 
 const CONTENT = {
 
@@ -101,7 +96,6 @@ const CONTENT = {
         substack: "https://substack.com/@shraddhaha",
         github: "https://github.com/03shraddha",
         email: "meetshraddhakulkarni@gmail.com",
-        resume: RESUME_URL  // Uses the constant defined at top of file
     },
 
     // ==========================================
