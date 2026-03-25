@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Personal portfolio website for Shraddha Kulkarni. Static site deployed to GitHub Pages at shraddha-kulkarni.com.
+Personal portfolio website for Tharun K M. Static site deployed to GitHub Pages at [shraddha-kulkarni.com](https://tharunkm-83.github.io).
 
 ## Development
 
@@ -33,7 +33,6 @@ Edit `content.js` to update website text. Key sections:
 ## Database Tables
 
 - `guestbook_notes` - Anonymous visitor messages
-- `photos` - Polaroid gallery with base64 images
 - `page_views` - View counter
 - `content_entries` - Calendar content (articles, videos, podcasts)
 
