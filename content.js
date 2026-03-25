@@ -54,18 +54,13 @@ const CONTENT = {
             ]
         },
 
-//        corporateStory: {
-  //          title: "The work, explained",
-    //        subtitle: "Research interests: applied data science · urban systems · development economics · tech policy",
-//
-  //          paragraphs: [
-    //            `I came to data science through economics, which means I tend to approach quantitative work with a set of prior questions: what is this measure actually capturing? What are the incentives that shaped this data? What would a different specification tell us? That grounding has been useful across very different kinds of problems.`,
-//
-  //              `My research has touched urban transport infrastructure (building composite sustainability indices for Indian cities), labour markets (wage determination using PLFS microdata), climate and geospatial data (processing gridded precipitation datasets), and operations research (modelling runway congestion using queueing theory). The methods vary considerably — Stata for econometrics, Python for simulation and machine learning, R for statistical work — but the underlying interest is consistent: understanding systems that matter for real people.`,
-//
-  //              `I am also interested in digital public infrastructure as a research area in its own right — how DPI systems are designed, where they succeed and fail at inclusion, and what governance frameworks make them accountable. This is relatively new territory for applied researchers, and I find the questions genuinely open.`
-    //        ]
-      //  },
+      corporateStory: {
+            title: "My interests, explained",
+           subtitle: "Research interests: applied data science · complex systems · development economics · tech policy",
+ 
+             paragraphs: [
+                 ]
+     },
 
         background: {
             title: "Background",
@@ -122,14 +117,10 @@ const CONTENT = {
     contactLine: ``,
 
 
-//    uniqueAbilities: [
-  //      { text: "explaining queueing theory using airport observations", url: "#", highlight: "" },
-    //    { text: "finding the structural story inside a messy dataset", url: "#", highlight: "" },
-      //  { text: "reading IMD rainfall maps for fun", url: "#", highlight: "" },
-      //  { text: "asking the one question that reframes the whole problem", url: "#", highlight: "" }
-    //],
+    uniqueAbilities: [
+    ],
 
-    // Name in Kannada (hover effect on your name on the landing page)
+     Name in Kannada (hover effect on your name on the landing page)
     nameKannada: "ತರುಣ್ ಕೆ. ಎಂ.",
 
     // ==========================================
@@ -289,7 +280,7 @@ const CONTENT = {
     // Add your Substack posts here as you publish them.
     // Format: { year: "2025", title: "Post title", url: "full URL" }
     // ==========================================
-    Thoughts: [
+    thoughts: [
         // Add your Substack posts here. Examples:
         { year: "2025", title: "Digital Public Goods: The Promise Doesn't Match the Practice", url: "https://techpolicystackanalyst.substack.com/p/digital-public-goods-the-promise?r=6o8kmn" },
         { year: "2025", title: "Digital Public Goods and the SDGs", url: "https://techpolicystackanalyst.substack.com/p/digital-public-goods-and-the-sdgs?r=6o8kmn" },
