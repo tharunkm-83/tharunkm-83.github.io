@@ -3464,21 +3464,21 @@ function initGuestbook() {
         }
     }
 
-    // Save note to Supabase
+    // Save note via Edge Function (blocks direct API abuse)
     async function saveNoteToSupabase(message) {
-        if (!supabaseClient) return null;
         try {
-            const { data, error } = await supabaseClient
-                .from('guestbook_notes')
-                .insert([{ message }])
-                .select();
+            const res = await fetch('https://ptoykobcidzgewmtiomp.supabase.co/functions/v1/super-handler', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message })
+            });
 
-            if (error) {
-                console.error('Error saving guestbook note:', error);
+            if (!res.ok) {
+                console.error('Error saving guestbook note:', res.status);
                 return null;
             }
 
-            return data[0];
+            return await res.json();
         } catch (err) {
             console.error('Error saving guestbook note:', err);
             return null;
