@@ -81,17 +81,11 @@ document.addEventListener('DOMContentLoaded', () => {
         initTabs();
         initScrollSpy();
         initRouting();      // SPA routing: scroll to section from URL path
-        initCustomCursor(); // Custom cursor
-        initPhotoGallery(); // Polaroid photo gallery
         initContentCalendar(); // Content consumption calendar
         initMobileMenu();   // Mobile hamburger menu
         initPageViewCounter(); // Page view counter
         initGuestbook();    // Virtual guestbook
 
-        // Initialize text reveal after content is loaded
-        setTimeout(() => {
-            initTextReveal();
-        }, 150);
 
         updateYear();
         console.log('All initialization complete');
@@ -240,12 +234,6 @@ function initMobileMenu() {
 /**
  * Custom Cursor
  */
-function initCustomCursor() {
-    const cursor = document.querySelector('.cursor');
-    if (!cursor) {
-        console.log('Cursor element not found');
-        return;
-    }
 
     // Simple mouse tracking
     document.addEventListener('mousemove', function(e) {
@@ -1731,11 +1719,7 @@ function updateScrollSpy(sections, navLinks) {
  * Sequential word-by-word reveal like reading - left to right, line by line
  * Line 1 completes before Line 2 starts
  */
-function initTextReveal() {
-    // Respect reduced motion preference
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        return;
-    }
+
 
     // Color values
     const fadedColor = '#b5b5b5';
