@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://shraddha-kulkarni.com/sitemap.xml
+Sitemap: https://github.com/tharunkm-83/sitemap.xml
