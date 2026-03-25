@@ -72,15 +72,6 @@ body {
    Custom Cursor - Yellow Flower
    =================================== */
 
-/* Custom cursor using URL - dark pink flower */
-html, body, * {
-    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Ctext x='4' y='20' font-size='18' fill='%23e75480'%3E✿%3C/text%3E%3C/svg%3E") 14 14, auto;
-}
-
-/* Pointer cursor for clickable elements - larger dark pink flower */
-a, button, .tab, .highlight, [role="button"] {
-    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Ctext x='4' y='22' font-size='22' fill='%23e75480'%3E✿%3C/text%3E%3C/svg%3E") 16 16, pointer;
-}
 
 /* Hide the JS cursor elements - not needed */
 .cursor, .cursor-ring {
@@ -337,6 +328,10 @@ a, button, .tab, .highlight, [role="button"] {
     display: none;
 }
 
+.hidden-section {
+    display: none;
+}
+
 .name:hover .name-english {
     display: none;
 }
@@ -409,7 +404,7 @@ a, button, .tab, .highlight, [role="button"] {
     font-family: var(--font-body);
     font-size: 2rem;
     font-weight: 600;
-    text-transform: lowercase;
+    text-transform: none;
     letter-spacing: -0.02em;
     color: var(--color-text);
     margin-bottom: 8px;
