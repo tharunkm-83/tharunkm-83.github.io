@@ -4,8 +4,8 @@
  */
 
 // 🔧 SUPABASE CONFIGURATION
-const SUPABASE_URL = 'https://ptoykobcidzgewmtiomp.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB0b3lrb2JjaWR6Z2V3bXRpb21wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1ODQ0MDYsImV4cCI6MjA4NTE2MDQwNn0.7kP4Dk4paoIzGMfwYmswlyrQhSTSS-3qVMEPjrU0HvE';
+const SUPABASE_URL = 'https://cyzeyrbgxwzapcntdenu.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN5emV5cmJneHd6YXBjbnRkZW51Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0MTIwMzUsImV4cCI6MjA4OTk4ODAzNX0.rptgUta9gGTY6vKdCj4cen9p6f2uQ8c4Mz7BQRNBkK0';
 
 // Supabase client - initialized later
 let supabaseClient = null;
@@ -25,7 +25,7 @@ function initSupabase() {
 }
 
 // Admin password hash (SHA-256 of "admin361")
-const ADMIN_PASSWORD_HASH = '0a9933ce1f3ee9195af9ac29566e786995291f9fbbe7630bc42fb1f04b67a7ab';
+const ADMIN_PASSWORD_HASH = '96627b6433074090938ad6cfa0f22bf6c2675f8d5725b6c46778c2f725ba2554';
 
 // Simple SHA-256 hash function
 async function sha256(message) {
@@ -35,12 +35,12 @@ async function sha256(message) {
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
-// Check for admin mode via URL parameter: ?admin=shraddha
+// Check for admin mode via URL parameter: ?admin=Tharun
 async function checkAdminMode() {
     const urlParams = new URLSearchParams(window.location.search);
     const adminParam = urlParams.get('admin');
 
-    if (adminParam === 'shraddha') {
+    if (adminParam === 'Tharun') {
         // Prompt for password
         const password = prompt('Enter admin password:');
         if (password) {
@@ -466,7 +466,7 @@ function loadContent() {
 async function loadSubstackPosts() {
     const CACHE_KEY = 'substack-posts-v3';
     const CACHE_EXPIRY = 4 * 60 * 60 * 1000; // 4 hour cache
-    const RSS_URL = 'https://shraddhaha.substack.com/feed';
+    const RSS_URL = 'https://techpolicyanalyst.substack.com/feed';
 
     // Stale-while-revalidate: show any cached data immediately, then refresh if stale
     const cached = localStorage.getItem(CACHE_KEY);
@@ -591,7 +591,7 @@ function renderThoughtsPosts(posts) {
         <ol class="thoughts-posts-list">
             ${postsHtml}
         </ol>
-        <a href="https://shraddhaha.substack.com" target="_blank" rel="noopener noreferrer" class="thoughts-view-all">
+        <a href="https://techpolicyanalyst.substack.com" target="_blank" rel="noopener noreferrer" class="thoughts-view-all">
             View all posts on Substack →
         </a>
     `;
