@@ -232,31 +232,6 @@ function initMobileMenu() {
 }
 
 /**
- * Custom Cursor
- */
-
-    // Simple mouse tracking
-    document.addEventListener('mousemove', function(e) {
-        cursor.style.left = e.clientX + 'px';
-        cursor.style.top = e.clientY + 'px';
-    });
-
-    // Hover effect on clickable elements
-    document.addEventListener('mouseover', function(e) {
-        if (e.target.closest('a, button, .tab, .highlight')) {
-            cursor.style.transform = 'translate(-50%, -50%) scale(1.3)';
-        }
-    });
-
-    document.addEventListener('mouseout', function(e) {
-        if (e.target.closest('a, button, .tab, .highlight')) {
-            cursor.style.transform = 'translate(-50%, -50%) scale(1)';
-        }
-    });
-}
-
-
-/**
  * Load all content from the CONTENT object in content.js
  */
 function loadContent() {
@@ -298,7 +273,7 @@ function loadContent() {
     const aboutHtml = `
         ${about.intro ? `<p class="about-intro"><strong>${about.intro}</strong></p>` : ''}
         <p>${about.mainText}</p>
-        <p>${about.debateText}</p>
+        ${about.debateText ? `<p>${about.debateText}</p>` : ''}
 
         <div class="about-subsection">
             <p><strong>${about.learnAboutMe.title}</strong></p>
@@ -454,7 +429,7 @@ function loadContent() {
 async function loadSubstackPosts() {
     const CACHE_KEY = 'substack-posts-v3';
     const CACHE_EXPIRY = 4 * 60 * 60 * 1000; // 4 hour cache
-    const RSS_URL = 'https://techpolicyanalyst.substack.com/feed';
+    const RSS_URL = 'https://techpolicystackanalyst.substack.com/feed';
 
     // Stale-while-revalidate: show any cached data immediately, then refresh if stale
     const cached = localStorage.getItem(CACHE_KEY);
@@ -579,7 +554,7 @@ function renderThoughtsPosts(posts) {
         <ol class="thoughts-posts-list">
             ${postsHtml}
         </ol>
-        <a href="https://techpolicyanalyst.substack.com" target="_blank" rel="noopener noreferrer" class="thoughts-view-all">
+        <a href="https://techpolicystackanalyst.substack.com" target="_blank" rel="noopener noreferrer" class="thoughts-view-all">
             View all posts on Substack →
         </a>
     `;
@@ -909,9 +884,25 @@ function initProjectsSection() {
 
     // Load and render
     async function init() {
-        const supabaseProjects = await loadProjectsFromSupabase();
-        state.projects = (supabaseProjects !== null) ? supabaseProjects : [];
+        const fallbackProjects = (CONTENT.projects || []).map((p, index) => ({
+            id: p.id || -(index + 1),
+            name: p.name,
+            highlight: p.highlight || 'blue',
+            briefDescription: p.briefDescription || p.brief_description || '',
+            expandedContent: p.expandedContent || p.expanded_content || '',
+            githubUrl: p.githubUrl || p.github_url || p.url || '',
+            demoUrl: p.demoUrl || p.demo_url || '',
+            previewImageUrl: p.previewImageUrl || p.preview_image_url || '',
+            sortOrder: p.sortOrder || p.sort_order || index
+        }));
+        state.projects = fallbackProjects;
         renderProjects();
+
+        const supabaseProjects = await loadProjectsFromSupabase();
+        if (supabaseProjects && supabaseProjects.length > 0) {
+            state.projects = supabaseProjects;
+            renderProjects();
+        }
     }
 
     init();
@@ -1714,244 +1705,8 @@ function updateScrollSpy(sections, navLinks) {
     }
 }
 
-/**
- * Scroll-Triggered Text Reveal Effect
- * Sequential word-by-word reveal like reading - left to right, line by line
- * Line 1 completes before Line 2 starts
- */
-
-
-    // Color values
-    const fadedColor = '#b5b5b5';
-    const fullColor = '#1a1a1a';
-
-    // Function to split text into word spans while preserving HTML
-    function splitTextIntoWords(element) {
-        const walker = document.createTreeWalker(
-            element,
-            NodeFilter.SHOW_TEXT,
-            null,
-            false
-        );
-
-        const textNodes = [];
-        while (walker.nextNode()) {
-            textNodes.push(walker.currentNode);
-        }
-
-        textNodes.forEach(textNode => {
-            const text = textNode.textContent;
-            if (!text.trim()) return;
-
-            const words = text.split(/(\s+)/);
-            const fragment = document.createDocumentFragment();
-
-            words.forEach(word => {
-                if (word.match(/^\s+$/)) {
-                    fragment.appendChild(document.createTextNode(word));
-                } else if (word) {
-                    const span = document.createElement('span');
-                    span.className = 'reveal-word';
-                    span.textContent = word;
-                    span.style.color = fadedColor;
-                    fragment.appendChild(span);
-                }
-            });
-
-            textNode.parentNode.replaceChild(fragment, textNode);
-        });
-    }
-
-    // Define selectors for elements to animate
-    const selectors = [
-        // Hello Section
-        '#name', '#hello-intro', '#contact-line',
-        '.unique-abilities h2', '.unique-abilities li',
-        // About Section
-        '#about .section-title', '#about .section-intro',
-        '#about-content p', '#about-content .about-subtitle',
-        '#about-content .about-list li', '.beyond-work-item',
-        // Work Section
-        '#work .section-title', '#work .section-intro',
-        // About expanded content
-        '.background-expanded p', '.beyond-work-expanded p'
-    ];
-
-    let elementCount = 0;
-
-    // First pass: split all text into words
-    selectors.forEach(selector => {
-        document.querySelectorAll(selector).forEach(el => {
-            if (el.dataset.revealInit) return;
-            el.dataset.revealInit = 'true';
-            elementCount++;
-            splitTextIntoWords(el);
-        });
-    });
-
-    // Collect ALL words with positions
-    const allWords = Array.from(document.querySelectorAll('.reveal-word'));
-
-    if (allWords.length === 0) return;
-
-    // Get typical line height from first word's parent
-    const computedStyle = window.getComputedStyle(allWords[0].parentElement || allWords[0]);
-    const lineHeight = parseInt(computedStyle.lineHeight) || 28;
-
-    // Get position data and calculate LINE NUMBER for each word
-    const wordData = allWords.map(word => {
-        const rect = word.getBoundingClientRect();
-        const absoluteTop = rect.top + window.scrollY;
-        return {
-            element: word,
-            top: absoluteTop,
-            left: rect.left,
-            // Calculate line number based on position (group by line height)
-            lineNum: Math.round(absoluteTop / (lineHeight * 0.8))
-        };
-    });
-
-    // Group words by their line number
-    const lineMap = new Map();
-    wordData.forEach(word => {
-        if (!lineMap.has(word.lineNum)) {
-            lineMap.set(word.lineNum, []);
-        }
-        lineMap.get(word.lineNum).push(word);
-    });
-
-    // Sort line numbers and create ordered lines array
-    const sortedLineNums = Array.from(lineMap.keys()).sort((a, b) => a - b);
-    const lines = sortedLineNums.map(lineNum => {
-        const wordsInLine = lineMap.get(lineNum);
-        // Sort words within each line by X position (left to right)
-        wordsInLine.sort((a, b) => a.left - b.left);
-        return wordsInLine;
-    });
-
-    // Flatten into single array with sequential indices
-    // CRITICAL: Line 1 gets indices 0-N, Line 2 gets N+1-M, etc.
-    const sortedWords = [];
-    lines.forEach((line, lineIndex) => {
-        line.forEach((word, wordInLineIndex) => {
-            word.index = sortedWords.length;
-            word.lineIndex = lineIndex;
-            sortedWords.push(word);
-        });
-    });
-
-    const totalWords = sortedWords.length;
-    const totalLines = lines.length;
-
-    if (totalWords === 0) return;
-
-    // Get content boundaries
-    const firstWordTop = sortedWords[0].top;
-    const lastWordTop = sortedWords[totalWords - 1].top;
-
-    function updateRevealStrict() {
-        const scrollY = window.scrollY;
-        const viewportHeight = window.innerHeight;
-
-        // Reading position at 50% from top of viewport
-        const readingLineY = scrollY + (viewportHeight * 0.50);
-
-        // Find the first incomplete line
-        let activeLineIndex = 0;
-        for (let i = 0; i < lines.length; i++) {
-            const lineTop = lines[i][0].top;
-            if (readingLineY >= lineTop) {
-                activeLineIndex = i;
-            } else {
-                break;
-            }
-        }
-
-        // Process each line
-        lines.forEach((line, lineIndex) => {
-            const lineTop = line[0].top;
-            const wordsInLine = line.length;
-
-            if (lineIndex < activeLineIndex) {
-                // Previous lines - fully revealed
-                line.forEach(({ element }) => {
-                    element.style.color = fullColor;
-                });
-            } else if (lineIndex === activeLineIndex) {
-                // Active line - reveal word by word
-                const distancePastLine = readingLineY - lineTop;
-                const pixelsPerWord = 18;
-                const wordsToReveal = Math.max(0, distancePastLine / pixelsPerWord);
-
-                line.forEach(({ element }, wordIndexInLine) => {
-                    const wordProgress = wordsToReveal - wordIndexInLine;
-
-                    if (wordProgress <= 0) {
-                        element.style.color = fadedColor;
-                    } else if (wordProgress >= 1) {
-                        element.style.color = fullColor;
-                    } else {
-                        element.style.color = interpolateColor(fadedColor, fullColor, wordProgress);
-                    }
-                });
-            } else {
-                // Future lines - all faded
-                line.forEach(({ element }) => {
-                    element.style.color = fadedColor;
-                });
-            }
-        });
-    }
-
-    // Color interpolation helper
-    function interpolateColor(color1, color2, progress) {
-        const hex1 = color1.replace('#', '');
-        const hex2 = color2.replace('#', '');
-
-        const r1 = parseInt(hex1.substr(0, 2), 16);
-        const g1 = parseInt(hex1.substr(2, 2), 16);
-        const b1 = parseInt(hex1.substr(4, 2), 16);
-
-        const r2 = parseInt(hex2.substr(0, 2), 16);
-        const g2 = parseInt(hex2.substr(2, 2), 16);
-        const b2 = parseInt(hex2.substr(4, 2), 16);
-
-        const r = Math.round(r1 + (r2 - r1) * progress);
-        const g = Math.round(g1 + (g2 - g1) * progress);
-        const b = Math.round(b1 + (b2 - b1) * progress);
-
-        return `rgb(${r}, ${g}, ${b})`;
-    }
-
-    // Use requestAnimationFrame for smooth updates
-    let ticking = false;
-    function onScroll() {
-        if (!ticking) {
-            requestAnimationFrame(() => {
-                updateRevealStrict();
-                ticking = false;
-            });
-            ticking = true;
-        }
-    }
-
-    // Listen for scroll events
-    window.addEventListener('scroll', onScroll, { passive: true });
-
-    // Initial update
-    updateReveal();
-}
-
-/**
- * Refresh text reveal for dynamically loaded content
- */
 function refreshTextReveal() {
-    setTimeout(() => {
-        initTextReveal();
-        if (typeof ScrollTrigger !== 'undefined') {
-            ScrollTrigger.refresh();
-        }
-    }, 100);
+    // Text reveal intentionally disabled.
 }
 
 /**
@@ -3688,5 +3443,3 @@ Type your message below and click
     // Initial render
     renderEntries();
 }
-
-

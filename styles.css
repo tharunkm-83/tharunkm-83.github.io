@@ -69,16 +69,6 @@ body {
 }
 
 /* ===================================
-   Custom Cursor - Yellow Flower
-   =================================== */
-
-
-/* Hide the JS cursor elements - not needed */
-.cursor, .cursor-ring {
-    display: none !important;
-}
-
-/* ===================================
    Page View Counter (in footer)
    =================================== */
 
@@ -4470,6 +4460,13 @@ a .reveal-word {
     /* Hide desktop add content button */
     .add-content-btn {
         display: none;
+    }
+
+    a:hover,
+    button:hover,
+    .highlight:hover,
+    [role="button"]:hover {
+        cursor: pointer !important;
     }
 }
 
