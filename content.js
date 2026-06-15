@@ -118,9 +118,12 @@ const CONTENT = {
 
 
     uniqueAbilities: [
+        { text: "Turning messy datasets into interpretable evidence", highlight: "blue" },
+        { text: "Connecting economics, policy, and applied data science", highlight: "peach" },
+        { text: "Writing project notes that explain the method, not just the output", highlight: "lavender" }
     ],
 
-     Name in Kannada (hover effect on your name on the landing page)
+    // Name in Kannada (hover effect on your name on the landing page)
     nameKannada: "ತರುಣ್ ಕೆ. ಎಂ.",
 
     // ==========================================
