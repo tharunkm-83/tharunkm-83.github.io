@@ -76,7 +76,8 @@ const CONTENT = {
         ]
         },
 
-    title: "Outside the work",
+        beyondWork: {
+            title: "Outside the work",
     items: [
         {
             emoji: "📖",
@@ -98,8 +99,9 @@ const CONTENT = {
             label: "Learning how to live",
             text: "Beyond research, I'm curious about how people learn, build meaningful lives, and make better decisions. The psychology of everyday life fascinates me as much as economics."
         }
-    ]
-},
+            ]
+        }
+    },
 
     // Contact line (keeping for backwards compatibility with script.js)
     contactLine: ``,
