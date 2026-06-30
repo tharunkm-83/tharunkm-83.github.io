@@ -33,7 +33,7 @@ const CONTENT = {
   
     helloIntro: `I work at the intersection of data, economics, and public systems — trying to understand how things actually work, and what the numbers reveal when you look carefully enough.
     <br><br>
-    I am based in Mumbai, India. You can reach me on <a href="https://in.linkedin.com/in/tharun-k-m-b51285361" target="_blank">LinkedIn</a> or by <a href="mailto:tharunkm1983@gmail.com">email</a>.`,
+    I am based in Bengaluru, India. You can reach me on <a href="https://in.linkedin.com/in/tharun-k-m-b51285361" target="_blank">LinkedIn</a> or by <a href="mailto:tharunkm1983@gmail.com">email</a>.`,
 
     // ==========================================
     // 2. ABOUT SECTION
@@ -43,7 +43,7 @@ const CONTENT = {
     aboutContent: {
         intro: ``,
 
-        mainText: `I am a researcher and analyst with training in <a href="https://in.linkedin.com/in/tharun-k-m-b51285361" target="_blank" class="highlight blue">economics, data science, business intelligence and public policy</a>.`,
+        mainText: `I am a researcher and analyst with training in <a href="https://in.linkedin.com/in/tharun-k-m-b51285361" target="_blank" class="highlight blue">economics, data science, business intelligence, sustainability and public policy</a>.`,
 
         learnAboutMe: {
             title: `A few places to learn more about my work:`,
@@ -55,63 +55,51 @@ const CONTENT = {
         },
 
       corporateStory: {
-            title: "My interests, explained",
-           subtitle: "Research interests: applied data science · complex systems · development economics · tech policy",
+            title: "My interests",
+           subtitle: "What I'm passionate about: applied data science · complex systems · tech policy · climate change",
  
              paragraphs: [
-                 ]
+                 "Data can tell many stories, but only if you understand the context behind it. Good analysis isn't just about models or statistics—it's about asking the right questions and knowing what the data can, and cannot, tell you.",
+                 "The world runs on complex systems built from millions of small interactions. They adapt, evolve, and produce outcomes that aren't always predictable. That's precisely why they deserve to be studied—with curiosity and a healthy dose of humility.",
+                 "Technology is reshaping economies, institutions, and everyday life at an unprecedented pace. I'm interested in understanding how these changes ripple through society and influence the way we live and work.",
+                 "Climate change is where all of these interests come together. It combines data, complex systems, economics, technology, and public policy into one of the defining challenges—and opportunities—of our time."
+   
+             ]
      },
 
         background: {
             title: "Background",
             items: [
-                `🔹 Interdisciplinary training in <strong>economics, data science, and sustainability</strong> — I work across these areas rather than staying neatly inside any one of them.`,
-                `🔹 Comfortable with both <strong>econometric methods</strong> (regression analysis, index construction, survey microdata) and <strong>computational approaches</strong> (machine learning, simulation, geospatial data processing).`,
-                `🔹 I have worked with large-scale administrative and survey datasets including <strong>PLFS</strong>, gridded climate data from IMD and IPCC-aligned sources, and urban infrastructure records across Indian cities.`,
-                `🔹 Native Kannada speaker, based in India. I write in English about the things I find interesting — economics, technology, geopolitics, and the occasional long detour into something completely unrelated.`
-            ]
+                `🔹 I work at the intersection of <strong>economics, data science, and sustainability</strong>, borrowing ideas wherever they help explain the problem.`,
+                `🔹 Comfortable with both <strong>econometrics</strong> and <strong>machine learning</strong>—from regression models and survey analysis to geospatial data, simulations, and predictive modelling.`,
+                `🔹 I've worked with large-scale administrative, survey, and climate datasets including <strong>PLFS</strong>, IMD gridded weather data, IPCC-aligned climate projections, and urban infrastructure data across Indian cities.`,
+        ]
         },
 
-        beyondWork: {
-            title: "Outside the work",
-            items: [
-                {
-                    emoji: "📖",
-                    label: "Reading, widely",
-                    // ---- INTROSPECTION NOTE ----
-                    // Replace this with what you actually read.
-                    // The most compelling version is specific: not "I read economics"
-                    // but the actual books, papers, or writers that have changed
-                    // how you think about something.
-                    // ----------------------------
-                    text: "I read across development economics, history of technology, political economy, and science writing. I am drawn to work that takes complexity seriously without hiding behind it."
-                },
-                {
-                    emoji: "✍️",
-                    label: "Writing",
-                    text: "I write on Substack — mostly about ideas at the intersection of technology, policy, and how institutions work. The writing is exploratory rather than authoritative; I use it to think through things I don't yet fully understand."
-                },
-                {
-                    emoji: "🌐",
-                    label: "Geopolitics and systems thinking",
-                    // ---- INTROSPECTION NOTE ----
-                    // This is a guess based on your stated interests.
-                    // If geopolitics is a genuine interest, add a sentence that
-                    // makes it specific — a region, a question, a framing
-                    // that you actually find compelling. Specificity is what
-                    // separates "I'm interested in geopolitics" from something
-                    // that makes a reader lean in.
-                    // ----------------------------
-                    text: "I find myself drawn to questions about how states and systems interact at scale — trade, infrastructure, governance capacity, the geography of development. Less interested in the day-to-day and more in the structural patterns."
-                },
-                {
-                    emoji: "🤔",
-                    label: "Decision-making and learning",
-                    text: "I think about how people and institutions update their beliefs — and why they often don't, even with good evidence. This comes up in research methodology, in policy design, and in everyday life."
-                }
-            ]
+    title: "Outside the work",
+    items: [
+        {
+            emoji: "📖",
+            label: "Reading",
+            text: "I read widely—books, papers, essays, newsletters, and whatever rabbit hole I'm currently obsessed with. Mostly economics, technology, history, and the occasional great piece of fiction."
+        },
+        {
+            emoji: "✍️",
+            label: "Writing",
+            text: "I write on Substack to clarify my thinking. Most posts start as questions I don't have answers to and end up becoming explorations of technology, economics, and public policy."
+        },
+        {
+            emoji: "🌍",
+            label: "Systems & geopolitics",
+            text: "I'm less interested in headlines and more interested in the forces underneath them—how institutions evolve, how states compete, and how incentives shape the world."
+        },
+        {
+            emoji: "🧠",
+            label: "Learning how to live",
+            text: "Beyond research, I'm curious about how people learn, build meaningful lives, and make better decisions. The psychology of everyday life fascinates me as much as economics."
         }
-    },
+    ]
+},
 
     // Contact line (keeping for backwards compatibility with script.js)
     contactLine: ``,
@@ -132,7 +120,7 @@ const CONTENT = {
     socialLinks: {
         linkedin: "https://in.linkedin.com/in/tharun-k-m-b51285361",
         twitter: "x.com/@zealover_9293",
-        substack: "https://substack.com/@tharunkm",
+        substack: "https://substack.com/@techpolicyanalyst",
         github: "https://github.com/tharunkm-83",
         email: "tharunkm1983@gmail.com",
     },
@@ -227,7 +215,7 @@ const CONTENT = {
                 <p>★ Applied M/M/C queueing framework with Poisson arrivals and exponential service times to model runway throughput.</p>
                 <p>★ Discrete-event simulation (SimPy) used to test realistic traffic patterns and identify non-linear congestion thresholds.</p>
                 <p>★ Findings have direct relevance for slot allocation policy and infrastructure capacity planning.</p>
-                <p><a href="https://github.com/tharunkm-83" target="_blank" class="project-cta highlight lavender">View on GitHub →</a></p>
+                <p><a href="https://github.com/tharunkm-83/Markov-Chain-Monte-Carlo-in-Air-Traffic-Control-Simulation-" target="_blank" class="project-cta highlight lavender">View on GitHub →</a></p>
             `
         },
         {
@@ -238,7 +226,7 @@ const CONTENT = {
             expandedContent: `
                 <p>★ Log-linear regression analysis using Stata on PLFS data, controlling for education, sector, employment type, gender, and geography.</p>
                 <p>★ Documented informal employment wage penalties and regional variation in returns to education.</p>
-                <p><a href="https://github.com/tharunkm-83" target="_blank" class="project-cta highlight peach">View on GitHub →</a></p>
+                <p><a href="https://github.com/tharunkm-83/PLFS---Wage-Modelling" target="_blank" class="project-cta highlight peach">View on GitHub →</a></p>
             `
         },
         {
